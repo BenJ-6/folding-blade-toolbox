@@ -1,13 +1,27 @@
 <script setup lang="ts">
+import { computed } from "vue";
+import ComparePreview from "@/components/ComparePreview.vue";
 import DropZone from "@/components/DropZone.vue";
 import FileList from "@/components/FileList.vue";
 import PageHeader from "@/components/PageHeader.vue";
 import ResizeSettings from "@/components/ResizeSettings.vue";
 import { useFileDrop } from "@/composables/useFileDrop";
+import { saveImage, saveMany } from "@/lib/files";
 import { createSampleFile } from "@/lib/sample";
 import { resizeQueue } from "@/stores/queues";
 
-const { items, selectedId, picking, pick, addFiles, addPaths, select, remove, clear } = resizeQueue;
+const {
+  items,
+  selectedId,
+  selectedItem,
+  picking,
+  pick,
+  addFiles,
+  addPaths,
+  select,
+  remove,
+  clear,
+} = resizeQueue;
 
 const { dragActive } = useFileDrop({
   onPaths: (paths) => {
@@ -16,6 +30,13 @@ const { dragActive } = useFileDrop({
   onFiles: (files) => {
     void addFiles(files);
   },
+});
+
+const previewItem = computed(() => {
+  if (selectedItem.value?.result) {
+    return selectedItem.value;
+  }
+  return items.value.find((item) => item.result) ?? null;
 });
 
 async function handlePick(): Promise<void> {
@@ -32,6 +53,20 @@ async function handleSample(): Promise<void> {
   } catch (error) {
     console.error(error);
   }
+}
+
+async function handleDownload(id: string): Promise<void> {
+  const item = items.value.find((entry) => entry.id === id);
+  if (item?.result) {
+    await saveImage(item.result.blob, item.result.fileName);
+  }
+}
+
+async function handleDownloadAll(): Promise<void> {
+  const exports = items.value.flatMap((item) =>
+    item.result ? [{ blob: item.result.blob, fileName: item.result.fileName }] : [],
+  );
+  await saveMany(exports);
 }
 </script>
 
@@ -56,7 +91,10 @@ async function handleSample(): Promise<void> {
           @remove="remove"
           @clear="clear"
           @add="handlePick"
+          @download="handleDownload"
+          @download-all="handleDownloadAll"
         />
+        <ComparePreview :item="previewItem" />
       </div>
 
       <ResizeSettings />

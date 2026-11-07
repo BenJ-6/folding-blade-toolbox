@@ -1,4 +1,4 @@
-export type OutputFormat = "auto" | "jpeg" | "webp" | "png";
+export type OutputFormat = "auto" | "jpeg" | "png";
 
 export type ResizeMode = "original" | "percent" | "fixed" | "max";
 
@@ -19,6 +19,7 @@ export interface ImageItem {
   name: string;
   path?: string;
   file?: File;
+  blob?: Blob;
   url: string;
   width: number;
   height: number;
@@ -40,7 +41,7 @@ export interface ProcessOptions {
   suffix: string;
 }
 
-export const ACCEPTED_EXTENSIONS = ["jpg", "jpeg", "png", "webp", "bmp"];
+export const ACCEPTED_EXTENSIONS = ["jpg", "jpeg", "png", "svg", "gif"];
 
 export const DEFAULT_OPTIONS: ProcessOptions = {
   format: "auto",

@@ -7,13 +7,17 @@ export interface DecodedImage {
 
 export async function decodeImage(blob: Blob): Promise<DecodedImage> {
   if (typeof createImageBitmap === "function") {
-    const bitmap = await createImageBitmap(blob, { imageOrientation: "from-image" });
-    return {
-      source: bitmap,
-      width: bitmap.width,
-      height: bitmap.height,
-      dispose: () => bitmap.close(),
-    };
+    try {
+      const bitmap = await createImageBitmap(blob, { imageOrientation: "from-image" });
+      return {
+        source: bitmap,
+        width: bitmap.width,
+        height: bitmap.height,
+        dispose: () => bitmap.close(),
+      };
+    } catch {
+      // SVG 等格式可能不被 createImageBitmap 支持，回退到 Image
+    }
   }
   return decodeWithImage(blob);
 }

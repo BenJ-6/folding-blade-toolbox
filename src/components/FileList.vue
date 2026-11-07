@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { LoaderCircle, Plus, X } from "lucide-vue-next";
-import { formatBytes, formatDims } from "@/lib/format";
+import { Download, LoaderCircle, Plus, X } from "lucide-vue-next";
+import { formatBytes, formatDims, savedPercent } from "@/lib/format";
 import type { ImageItem } from "@/types";
 
 const props = defineProps<{
@@ -14,9 +14,16 @@ const emit = defineEmits<{
   remove: [id: string];
   clear: [];
   add: [];
+  download: [id: string];
+  downloadAll: [];
 }>();
 
 const totalSize = computed(() => props.items.reduce((sum, item) => sum + item.size, 0));
+const doneItems = computed(() => props.items.filter((item) => item.result));
+
+function changePercent(item: ImageItem): number {
+  return item.result ? savedPercent(item.size, item.result.size) : 0;
+}
 </script>
 
 <template>
@@ -29,6 +36,15 @@ const totalSize = computed(() => props.items.reduce((sum, item) => sum + item.si
         </p>
       </div>
       <div class="flex gap-2">
+        <button
+          v-if="doneItems.length"
+          type="button"
+          class="bg-brand-soft text-brand hover:bg-brand-soft-2 inline-flex h-[30px] items-center gap-1 rounded-lg px-2.5 text-[12.5px] font-medium transition-colors"
+          @click="emit('downloadAll')"
+        >
+          <Download :size="14" />
+          全部下载
+        </button>
         <button
           type="button"
           class="border-line bg-surface text-ink-2 hover:border-line-strong hover:text-ink inline-flex h-[30px] items-center gap-1 rounded-lg border px-2.5 text-[12.5px] font-medium transition-colors"
@@ -69,23 +85,72 @@ const totalSize = computed(() => props.items.reduce((sum, item) => sum + item.si
 
         <div class="min-w-0 flex-1">
           <p class="text-ink truncate text-[13px] font-medium">{{ item.name }}</p>
-          <p class="mt-0.5 text-[11.5px]" :class="item.error ? 'text-danger' : 'text-ink-3'">
+          <p
+            class="mt-0.5 flex flex-wrap items-center gap-1 text-[11.5px]"
+            :class="item.error ? 'text-danger' : 'text-ink-3'"
+          >
             <template v-if="item.error">{{ item.error }}</template>
             <template v-else-if="!item.width">读取中…</template>
             <template v-else>
-              {{ formatDims(item.width, item.height) }} · {{ formatBytes(item.size) }}
+              <span>{{ formatDims(item.width, item.height) }}</span>
+              <span>·</span>
+              <span>{{ formatBytes(item.size) }}</span>
+              <template v-if="item.result">
+                <span>→</span>
+                <span class="text-ink-2">{{
+                  formatDims(item.result.width, item.result.height)
+                }}</span>
+                <span>·</span>
+                <span class="text-ink-2">{{ formatBytes(item.result.size) }}</span>
+              </template>
             </template>
           </p>
         </div>
 
-        <button
-          type="button"
-          class="text-ink-3 hover:bg-surface-3 hover:text-ink-2 grid size-8 shrink-0 place-items-center rounded-lg transition-colors"
-          title="移除"
-          @click.stop="emit('remove', item.id)"
+        <LoaderCircle
+          v-if="item.status === 'processing'"
+          :size="16"
+          class="text-brand shrink-0 animate-spin"
+        />
+        <span
+          v-else-if="item.result"
+          class="shrink-0 rounded-full px-2 py-0.5 text-[11.5px] font-semibold"
+          :class="
+            changePercent(item) > 0
+              ? 'bg-success-soft text-success'
+              : changePercent(item) < 0
+                ? 'text-danger bg-[#fdecec]'
+                : 'bg-surface-3 text-ink-2'
+          "
         >
-          <X :size="15" />
-        </button>
+          {{
+            changePercent(item) > 0
+              ? `−${changePercent(item)}%`
+              : changePercent(item) < 0
+                ? `+${Math.abs(changePercent(item))}%`
+                : "持平"
+          }}
+        </span>
+
+        <div class="flex shrink-0 items-center gap-1">
+          <button
+            v-if="item.result"
+            type="button"
+            class="text-ink-3 hover:bg-surface-3 hover:text-ink-2 grid size-8 place-items-center rounded-lg transition-colors"
+            title="下载"
+            @click.stop="emit('download', item.id)"
+          >
+            <Download :size="15" />
+          </button>
+          <button
+            type="button"
+            class="text-ink-3 hover:bg-surface-3 hover:text-ink-2 grid size-8 place-items-center rounded-lg transition-colors"
+            title="移除"
+            @click.stop="emit('remove', item.id)"
+          >
+            <X :size="15" />
+          </button>
+        </div>
       </div>
     </div>
   </section>

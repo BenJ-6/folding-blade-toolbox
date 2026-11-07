@@ -12,8 +12,8 @@ const MIME_BY_EXT: Record<string, string> = {
   jpg: "image/jpeg",
   jpeg: "image/jpeg",
   png: "image/png",
-  webp: "image/webp",
-  bmp: "image/bmp",
+  svg: "image/svg+xml",
+  gif: "image/gif",
 };
 
 const DIALOG_FILTER = {
@@ -104,6 +104,42 @@ export async function saveImage(blob: Blob, fileName: string): Promise<boolean> 
     return true;
   }
 
+  downloadViaAnchor(blob, fileName);
+  return true;
+}
+
+export interface ExportItem {
+  blob: Blob;
+  fileName: string;
+}
+
+export async function saveMany(items: ExportItem[]): Promise<number> {
+  if (!items.length) {
+    return 0;
+  }
+
+  if (inTauri()) {
+    const directory = await open({ directory: true, multiple: false });
+    if (typeof directory !== "string") {
+      return 0;
+    }
+    const separator = directory.includes("\\") ? "\\" : "/";
+    for (const item of items) {
+      await writeFile(
+        `${directory}${separator}${item.fileName}`,
+        new Uint8Array(await item.blob.arrayBuffer()),
+      );
+    }
+    return items.length;
+  }
+
+  items.forEach((item, index) => {
+    window.setTimeout(() => downloadViaAnchor(item.blob, item.fileName), index * 300);
+  });
+  return items.length;
+}
+
+function downloadViaAnchor(blob: Blob, fileName: string): void {
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = url;
@@ -111,6 +147,5 @@ export async function saveImage(blob: Blob, fileName: string): Promise<boolean> 
   document.body.appendChild(anchor);
   anchor.click();
   anchor.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 2000);
-  return true;
+  window.setTimeout(() => URL.revokeObjectURL(url), 2000);
 }

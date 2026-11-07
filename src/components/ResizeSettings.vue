@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { Lock, Scaling, Unlock } from "lucide-vue-next";
+import { LoaderCircle, Lock, Scaling, Unlock } from "lucide-vue-next";
 import { resizeQueue } from "@/stores/queues";
 import type { OutputFormat, ResizeMode } from "@/types";
 
-const { items, options, resetOptions } = resizeQueue;
+const { items, options, processing, progress, resetOptions, processAll } = resizeQueue;
 
 const resizeModes: { value: ResizeMode; label: string }[] = [
   { value: "original", label: "保持原尺寸" },
@@ -16,7 +16,6 @@ const resizeModes: { value: ResizeMode; label: string }[] = [
 const formatOptions: { value: OutputFormat; label: string }[] = [
   { value: "auto", label: "自动" },
   { value: "jpeg", label: "JPG" },
-  { value: "webp", label: "WebP" },
   { value: "png", label: "PNG" },
 ];
 
@@ -180,13 +179,21 @@ const percentFill = computed<Record<string, string>>(() => ({
     <div class="border-line mt-4 flex flex-col gap-2 border-t px-5 py-5">
       <button
         type="button"
-        disabled
-        class="bg-brand-gradient inline-flex h-[42px] items-center justify-center gap-2 rounded-[10px] text-[13.5px] font-semibold text-white opacity-50"
+        class="bg-brand-gradient inline-flex h-[42px] items-center justify-center gap-2 rounded-[10px] text-[13.5px] font-semibold text-white transition-all hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50"
+        :disabled="!items.length || processing"
+        @click="processAll"
       >
-        <Scaling :size="17" />
-        开始调整{{ items.length ? `（${items.length} 张）` : "" }}
+        <LoaderCircle v-if="processing" :size="17" class="animate-spin" />
+        <Scaling v-else :size="17" />
+        {{
+          processing
+            ? `处理中 ${progress.done}/${progress.total}`
+            : `开始调整${items.length ? `（${items.length} 张）` : ""}`
+        }}
       </button>
-      <p class="text-ink-3 text-center text-[11.5px]">处理内核将在下一阶段接入</p>
+      <p class="text-ink-3 text-center text-[11.5px]">
+        {{ processing ? "正在本地处理，请稍候" : "图片不会离开你的电脑" }}
+      </p>
     </div>
   </aside>
 </template>

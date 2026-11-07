@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { SlidersHorizontal, Zap } from "lucide-vue-next";
+import { LoaderCircle, SlidersHorizontal, Zap } from "lucide-vue-next";
 import { compressQueue } from "@/stores/queues";
 import type { OutputFormat } from "@/types";
 
-const { items, options, resetOptions } = compressQueue;
+const { items, options, processing, progress, resetOptions, processAll } = compressQueue;
 
 const formatOptions: { value: OutputFormat; label: string }[] = [
   { value: "auto", label: "自动" },
   { value: "jpeg", label: "JPG" },
-  { value: "webp", label: "WebP" },
   { value: "png", label: "PNG" },
 ];
 
@@ -53,9 +52,7 @@ const qualityFill = computed<Record<string, string>>(() => ({
             {{ option.label }}
           </button>
         </div>
-        <p class="text-ink-3 text-[11.5px] leading-relaxed">
-          自动 = 保持原格式；JPG / WebP 支持画质压缩
-        </p>
+        <p class="text-ink-3 text-[11.5px] leading-relaxed">自动 = 保持原格式；JPG 支持画质压缩</p>
       </div>
 
       <div class="flex flex-col gap-2.5">
@@ -80,7 +77,7 @@ const qualityFill = computed<Record<string, string>>(() => ({
         <p class="text-ink-3 text-[11.5px] leading-relaxed">
           {{
             options.format === "png"
-              ? "PNG 为无损格式，质量参数不生效"
+              ? "PNG 为无损格式，质量参数不生效；重编码变大时会保留原图"
               : "数值越低，体积越小，画质损失越明显"
           }}
         </p>
@@ -95,13 +92,21 @@ const qualityFill = computed<Record<string, string>>(() => ({
     <div class="border-line mt-4 flex flex-col gap-2 border-t px-5 py-5">
       <button
         type="button"
-        disabled
-        class="bg-brand-gradient inline-flex h-[42px] items-center justify-center gap-2 rounded-[10px] text-[13.5px] font-semibold text-white opacity-50"
+        class="bg-brand-gradient inline-flex h-[42px] items-center justify-center gap-2 rounded-[10px] text-[13.5px] font-semibold text-white transition-all hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50"
+        :disabled="!items.length || processing"
+        @click="processAll"
       >
-        <Zap :size="17" />
-        开始压缩{{ items.length ? `（${items.length} 张）` : "" }}
+        <LoaderCircle v-if="processing" :size="17" class="animate-spin" />
+        <Zap v-else :size="17" />
+        {{
+          processing
+            ? `处理中 ${progress.done}/${progress.total}`
+            : `开始压缩${items.length ? `（${items.length} 张）` : ""}`
+        }}
       </button>
-      <p class="text-ink-3 text-center text-[11.5px]">处理内核将在下一阶段接入</p>
+      <p class="text-ink-3 text-center text-[11.5px]">
+        {{ processing ? "正在本地处理，请稍候" : "图片不会离开你的电脑" }}
+      </p>
     </div>
   </aside>
 </template>
