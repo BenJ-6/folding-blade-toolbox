@@ -15,6 +15,8 @@ const formatOptions: { value: OutputFormat; label: string }[] = [
 const qualityFill = computed<Record<string, string>>(() => ({
   "--fill": `${options.quality}%`,
 }));
+
+const pngColorOptions = [256, 128, 64, 32];
 </script>
 
 <template>
@@ -53,6 +55,49 @@ const qualityFill = computed<Record<string, string>>(() => ({
           </button>
         </div>
         <p class="text-ink-3 text-[11.5px] leading-relaxed">自动 = 保持原格式；JPG 支持画质压缩</p>
+      </div>
+
+      <div v-if="options.format !== 'jpeg'" class="flex flex-col gap-2.5">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <p class="text-ink-2 text-[12.5px] font-semibold">PNG 有损压缩</p>
+            <p class="text-ink-3 text-[11.5px] leading-relaxed">
+              减少颜色数，体积最多可降 50% 以上
+            </p>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            :aria-checked="options.pngLossy"
+            class="relative h-[22px] w-[38px] shrink-0 rounded-full transition-colors"
+            :class="options.pngLossy ? 'bg-brand' : 'bg-surface-3'"
+            @click="options.pngLossy = !options.pngLossy"
+          >
+            <span
+              class="absolute top-[3px] size-4 rounded-full bg-white shadow transition-all"
+              :class="options.pngLossy ? 'left-[19px]' : 'left-[3px]'"
+            />
+          </button>
+        </div>
+
+        <div v-if="options.pngLossy" class="grid grid-cols-4 gap-1.5">
+          <button
+            v-for="count in pngColorOptions"
+            :key="count"
+            type="button"
+            class="h-8 rounded-lg border text-[11.5px] font-medium transition-colors"
+            :class="
+              options.pngColors === count
+                ? 'border-brand bg-brand-soft text-brand font-semibold'
+                : 'border-line bg-surface text-ink-2 hover:border-line-strong'
+            "
+            @click="options.pngColors = count"
+          >
+            {{ count }} 色
+          </button>
+        </div>
+
+        <p class="text-ink-3 text-[11.5px] leading-relaxed">仅对 PNG 生效；关闭时为无损压缩</p>
       </div>
 
       <div class="flex flex-col gap-2.5">

@@ -45,6 +45,8 @@ export async function processWithRust(
     height: options.height,
     keepRatio: options.keepRatio,
     maxSide: options.maxSide,
+    pngLossy: options.pngLossy,
+    pngColors: options.pngColors,
   };
 
   const result = await invoke<ArrayBuffer | Uint8Array>("process_image", {

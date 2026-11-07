@@ -39,6 +39,8 @@ export interface ProcessOptions {
   keepRatio: boolean;
   maxSide: number;
   suffix: string;
+  pngLossy: boolean;
+  pngColors: number;
 }
 
 export const ACCEPTED_EXTENSIONS = ["jpg", "jpeg", "png", "svg", "gif"];
@@ -53,4 +55,6 @@ export const DEFAULT_OPTIONS: ProcessOptions = {
   keepRatio: true,
   maxSide: 1600,
   suffix: "-min",
+  pngLossy: false,
+  pngColors: 128,
 };

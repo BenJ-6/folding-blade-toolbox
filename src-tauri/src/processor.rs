@@ -16,6 +16,14 @@ pub struct ProcessOptions {
     pub height: u32,
     pub keep_ratio: bool,
     pub max_side: u32,
+    #[serde(default)]
+    pub png_lossy: bool,
+    #[serde(default = "default_png_colors")]
+    pub png_colors: u32,
+}
+
+fn default_png_colors() -> u32 {
+    128
 }
 
 pub fn process(path: &str, options: &ProcessOptions) -> Result<Vec<u8>, String> {
@@ -45,14 +53,93 @@ pub fn process(path: &str, options: &ProcessOptions) -> Result<Vec<u8>, String> 
         _ => format,
     };
 
-    let encoded = encode(image, output_format, options.quality)?;
+    // PNG 有损量化：减少颜色数，显著压缩体积
+    if output_format == ImageFormat::Png && options.png_lossy {
+        let encoded = encode_png_lossy(&image, options.png_colors)?;
+        return Ok(optimize_png(encoded));
+    }
 
-    // 同格式且未改变尺寸时，重编码可能变大（尤其是调色板 PNG），保留原文件
-    if !resized && output_format == format && encoded.len() > data.len() {
-        return Ok(data);
+    // 同格式且未改变尺寸：PNG 直接做无损优化，JPEG 重编码变大时保留原图
+    if !resized && output_format == format {
+        if format == ImageFormat::Png {
+            return Ok(optimize_png(data));
+        }
+
+        let encoded = encode(image, output_format, options.quality)?;
+        if encoded.len() > data.len() {
+            return Ok(data);
+        }
+        return Ok(encoded);
+    }
+
+    let encoded = encode(image, output_format, options.quality)?;
+    if output_format == ImageFormat::Png {
+        return Ok(optimize_png(encoded));
     }
 
     Ok(encoded)
+}
+
+fn encode_png_lossy(image: &DynamicImage, colors: u32) -> Result<Vec<u8>, String> {
+    let rgba = image.to_rgba8();
+    let width = rgba.width() as usize;
+    let height = rgba.height() as usize;
+    let pixels: Vec<imagequant::RGBA> = rgba
+        .pixels()
+        .map(|pixel| imagequant::RGBA::new(pixel[0], pixel[1], pixel[2], pixel[3]))
+        .collect();
+
+    let mut attributes = imagequant::Attributes::new();
+    attributes
+        .set_max_colors(colors.clamp(2, 256))
+        .map_err(|error| format!("PNG 颜色量化失败：{error}"))?;
+    attributes
+        .set_speed(4)
+        .map_err(|error| format!("PNG 颜色量化失败：{error}"))?;
+
+    let mut source = attributes
+        .new_image(pixels, width, height, 0.0)
+        .map_err(|error| format!("PNG 颜色量化失败：{error}"))?;
+    let mut result = attributes
+        .quantize(&mut source)
+        .map_err(|error| format!("PNG 颜色量化失败：{error}"))?;
+    result
+        .set_dithering_level(1.0)
+        .map_err(|error| format!("PNG 颜色量化失败：{error}"))?;
+
+    let (palette, indices) = result
+        .remapped(&mut source)
+        .map_err(|error| format!("PNG 颜色量化失败：{error}"))?;
+
+    let mut palette_rgb = Vec::with_capacity(palette.len() * 3);
+    let mut palette_alpha = Vec::with_capacity(palette.len());
+    for color in &palette {
+        palette_rgb.extend_from_slice(&[color.r, color.g, color.b]);
+        palette_alpha.push(color.a);
+    }
+
+    let mut buffer = Vec::new();
+    {
+        let mut encoder = png::Encoder::new(&mut buffer, width as u32, height as u32);
+        encoder.set_color(png::ColorType::Indexed);
+        encoder.set_depth(png::BitDepth::Eight);
+        encoder.set_palette(palette_rgb);
+        encoder.set_trns(palette_alpha);
+
+        let mut writer = encoder
+            .write_header()
+            .map_err(|error| format!("PNG 编码失败：{error}"))?;
+        writer
+            .write_image_data(&indices)
+            .map_err(|error| format!("PNG 编码失败：{error}"))?;
+    }
+
+    Ok(buffer)
+}
+
+fn optimize_png(data: Vec<u8>) -> Vec<u8> {
+    let options = oxipng::Options::from_preset(2);
+    oxipng::optimize_from_memory(&data, &options).unwrap_or(data)
 }
 
 fn target_size(width: u32, height: u32, options: &ProcessOptions) -> (u32, u32) {
@@ -212,6 +299,8 @@ mod tests {
             height: 600,
             keep_ratio: true,
             max_side: 1000,
+            png_lossy: false,
+            png_colors: 128,
         }
     }
 
@@ -285,5 +374,23 @@ mod tests {
         let decoded = image::load_from_memory(&encoded).unwrap().to_rgba8();
 
         assert_eq!(decoded, image.to_rgba8());
+    }
+
+    #[test]
+    fn lossy_png_keeps_dimensions_and_limits_colors() {
+        use std::collections::HashSet;
+
+        let mut rgba = RgbaImage::new(16, 16);
+        for (x, y, pixel) in rgba.enumerate_pixels_mut() {
+            *pixel = image::Rgba([(x * 15) as u8, (y * 15) as u8, 100, 255]);
+        }
+        let image = DynamicImage::ImageRgba8(rgba);
+
+        let encoded = encode_png_lossy(&image, 16).unwrap();
+        let decoded = image::load_from_memory(&encoded).unwrap().to_rgba8();
+
+        assert_eq!(decoded.dimensions(), (16, 16));
+        let colors: HashSet<[u8; 4]> = decoded.pixels().map(|pixel| pixel.0).collect();
+        assert!(colors.len() <= 16, "颜色数超出限制：{}", colors.len());
     }
 }
