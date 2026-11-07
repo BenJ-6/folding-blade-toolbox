@@ -184,7 +184,7 @@ fn target_size(width: u32, height: u32, options: &ProcessOptions) -> (u32, u32) 
 
 fn resize_image(image: DynamicImage, width: u32, height: u32) -> DynamicImage {
     if !image.color().has_alpha() {
-        return image.resize_exact(width, height, FilterType::Lanczos3);
+        return image.resize_exact(width, height, FilterType::Triangle);
     }
 
     // 透明图先预乘 alpha 再缩放，避免边缘颜色渗入导致线条变细或发黑
@@ -196,7 +196,7 @@ fn resize_image(image: DynamicImage, width: u32, height: u32) -> DynamicImage {
         pixel[2] = ((pixel[2] as u16 * alpha) / 255) as u8;
     }
 
-    let mut resized = image::imageops::resize(&source, width, height, FilterType::Lanczos3);
+    let mut resized = image::imageops::resize(&source, width, height, FilterType::Triangle);
     for pixel in resized.pixels_mut() {
         let alpha = pixel[3];
         if alpha == 0 {
@@ -392,5 +392,82 @@ mod tests {
         assert_eq!(decoded.dimensions(), (16, 16));
         let colors: HashSet<[u8; 4]> = decoded.pixels().map(|pixel| pixel.0).collect();
         assert!(colors.len() <= 16, "颜色数超出限制：{}", colors.len());
+    }
+
+    fn line_image(size: u32, line_width: u32) -> DynamicImage {
+        let mut image = RgbaImage::new(size, size);
+        let start = (size - line_width) / 2;
+        for (x, _, pixel) in image.enumerate_pixels_mut() {
+            let inside = x >= start && x < start + line_width;
+            *pixel = if inside {
+                image::Rgba([0, 0, 0, 255])
+            } else {
+                image::Rgba([0, 0, 0, 0])
+            };
+        }
+        DynamicImage::ImageRgba8(image)
+    }
+
+    fn white_line_image(size: u32, line_width: u32) -> DynamicImage {
+        let mut image = RgbImage::from_pixel(size, size, Rgb([255, 255, 255]));
+        let start = (size - line_width) / 2;
+        for (x, _, pixel) in image.enumerate_pixels_mut() {
+            if x >= start && x < start + line_width {
+                *pixel = Rgb([0, 0, 0]);
+            }
+        }
+        DynamicImage::ImageRgb8(image)
+    }
+
+    fn alpha_width(image: &DynamicImage) -> f32 {
+        let rgba = image.to_rgba8();
+        let row = rgba.height() / 2;
+        let sum: u32 = (0..rgba.width())
+            .map(|x| rgba.get_pixel(x, row)[3] as u32)
+            .sum();
+        sum as f32 / 255.0
+    }
+
+    fn ink_width(image: &DynamicImage) -> f32 {
+        let rgb = image.to_rgb8();
+        let row = rgb.height() / 2;
+        let sum: u32 = (0..rgb.width())
+            .map(|x| 255 - rgb.get_pixel(x, row)[0] as u32)
+            .sum();
+        sum as f32 / 255.0
+    }
+
+    #[test]
+    fn maintains_line_width_after_resize() {
+        for line_width in [1u32, 2, 3, 5] {
+            for scale in [0.75f32, 0.5, 0.33, 0.25, 2.0] {
+                let source = line_image(64, line_width);
+                let target = (64.0 * scale).round() as u32;
+                let expected = line_width as f32 * (target as f32 / 64.0);
+
+                let resized = resize_image(source, target, target);
+                let measured = alpha_width(&resized);
+
+                assert!(
+                    (measured - expected).abs() < 0.1,
+                    "line={line_width} scale={scale} expected={expected:.2} measured={measured:.2}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn jpeg_keeps_line_width() {
+        for quality in [60u8, 82, 95] {
+            let source = white_line_image(128, 2);
+            let encoded = encode(source, ImageFormat::Jpeg, quality).unwrap();
+            let decoded = image::load_from_memory(&encoded).unwrap();
+            let measured = ink_width(&decoded);
+
+            assert!(
+                (measured - 2.0).abs() < 0.1,
+                "quality={quality} measured={measured:.2}"
+            );
+        }
     }
 }
