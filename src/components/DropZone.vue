@@ -7,7 +7,7 @@ defineProps<{
   picking: boolean;
 }>();
 
-const emit = defineEmits<{ pick: []; sample: [] }>();
+const emit = defineEmits<{ pick: [] }>();
 </script>
 
 <template>
@@ -30,20 +30,13 @@ const emit = defineEmits<{ pick: []; sample: [] }>();
       </div>
       <p class="text-ink text-[15px] font-semibold">拖拽图片到这里</p>
       <p class="text-ink-3 mt-1 text-[12.5px]">支持 JPG / PNG / WebP / BMP，可一次添加多张</p>
-      <div class="mt-4 flex items-center gap-2">
+      <div class="mt-4">
         <span
           class="bg-brand-gradient inline-flex h-9 items-center gap-1.5 rounded-[10px] px-4 text-[12.5px] font-semibold text-white shadow-[0_10px_20px_-12px_rgba(99,102,241,0.8)]"
         >
           <ImagePlus :size="15" />
           {{ picking ? "读取中…" : "选择图片" }}
         </span>
-        <button
-          type="button"
-          class="border-line bg-surface text-ink-2 hover:border-line-strong hover:text-ink inline-flex h-9 items-center rounded-[10px] border px-3.5 text-[12.5px] font-medium transition-colors"
-          @click.stop="emit('sample')"
-        >
-          使用示例图片
-        </button>
       </div>
     </div>
   </div>
@@ -75,4 +68,23 @@ const emit = defineEmits<{ pick: []; sample: [] }>();
       {{ picking ? "读取中…" : "添加" }}
     </button>
   </div>
+
+  <Teleport to="body">
+    <div
+      v-if="active"
+      class="bg-page/85 pointer-events-none fixed inset-0 z-50 grid place-items-center p-6 backdrop-blur-sm"
+    >
+      <div
+        class="border-brand bg-surface/95 flex w-full max-w-[560px] flex-col items-center rounded-3xl border-2 border-dashed px-6 py-14 text-center shadow-2xl"
+      >
+        <div class="bg-brand-soft text-brand mb-4 grid size-16 place-items-center rounded-2xl">
+          <Upload :size="32" :stroke-width="1.7" />
+        </div>
+        <p class="text-ink text-lg font-semibold">松开鼠标，添加图片</p>
+        <p class="text-ink-3 mt-1.5 text-[13px]">
+          整个页面均可拖拽 · 支持 JPG / PNG / WebP / BMP
+        </p>
+      </div>
+    </div>
+  </Teleport>
 </template>

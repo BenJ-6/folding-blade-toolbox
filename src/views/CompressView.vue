@@ -7,7 +7,6 @@ import FileList from "@/components/FileList.vue";
 import PageHeader from "@/components/PageHeader.vue";
 import { useFileDrop } from "@/composables/useFileDrop";
 import { saveImage, saveMany } from "@/lib/files";
-import { createSampleFile } from "@/lib/sample";
 import { compressQueue } from "@/stores/queues";
 
 const {
@@ -46,14 +45,6 @@ async function handlePick(): Promise<void> {
   }
 }
 
-async function handleSample(): Promise<void> {
-  try {
-    await addFiles([await createSampleFile()]);
-  } catch (error) {
-    console.error(error);
-  }
-}
-
 async function handleDownload(id: string): Promise<void> {
   const item = items.value.find((entry) => entry.id === id);
   if (item?.result) {
@@ -80,7 +71,6 @@ async function handleDownloadAll(): Promise<void> {
           :active="dragActive"
           :picking="picking"
           @pick="handlePick"
-          @sample="handleSample"
         />
         <FileList
           v-if="items.length"
