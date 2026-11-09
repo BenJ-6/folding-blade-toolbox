@@ -54,7 +54,11 @@ export async function processWithCanvas(
   options: ProcessOptions,
   sourceMime: string,
 ): Promise<Blob> {
-  if (sourceMime === "image/svg+xml" || sourceMime === "image/gif") {
+  const mime = resolveOutputMime(sourceMime, options.targetFormat);
+  if (
+    (sourceMime === "image/svg+xml" || sourceMime === "image/gif") &&
+    options.targetFormat === "source"
+  ) {
     throw new Error("SVG / GIF 压缩需要在桌面应用中使用");
   }
 
@@ -69,9 +73,8 @@ export async function processWithCanvas(
       throw new Error("Canvas 不可用");
     }
 
-    const mime = resolveOutputMime(sourceMime);
     if (mime === "image/jpeg") {
-      context.fillStyle = "#ffffff";
+      context.fillStyle = options.background || "#ffffff";
       context.fillRect(0, 0, target.width, target.height);
     }
 

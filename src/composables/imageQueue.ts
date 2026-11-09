@@ -194,7 +194,7 @@ export function createImageQueue(overrides: Partial<ProcessOptions> = {}): Image
     runOptions: ProcessOptions,
   ): Promise<{ blob: Blob; mime: string; fileName: string }> {
     const sourceMime = guessMime(item.name);
-    const mime = resolveOutputMime(sourceMime);
+    const mime = resolveOutputMime(sourceMime, runOptions.targetFormat);
     const fileName = makeOutputName(item.name, runOptions.suffix, mime);
 
     if (item.path && isTauri()) {

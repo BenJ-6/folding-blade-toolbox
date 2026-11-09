@@ -1,5 +1,7 @@
 export type ResizeMode = "original" | "percent" | "fixed" | "max" | "crop";
 
+export type OutputFormat = "source" | "jpeg" | "png";
+
 export type ItemStatus = "pending" | "processing" | "done" | "error";
 
 export interface ImageResult {
@@ -41,6 +43,9 @@ export interface ProcessOptions {
   suffix: string;
   pngLossy: boolean;
   pngColors: number;
+  targetFormat: OutputFormat;
+  background: string;
+  rasterScale: number;
 }
 
 export const ACCEPTED_EXTENSIONS = ["jpg", "jpeg", "png", "svg", "gif"];
@@ -57,4 +62,7 @@ export const DEFAULT_OPTIONS: ProcessOptions = {
   suffix: "-min",
   pngLossy: false,
   pngColors: 128,
+  targetFormat: "source",
+  background: "#ffffff",
+  rasterScale: 2,
 };

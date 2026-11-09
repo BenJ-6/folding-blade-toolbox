@@ -6,6 +6,18 @@ use image::{AnimationDecoder, DynamicImage, Frame};
 use super::ProcessOptions;
 use super::resize::{resize_crop, resize_image, target_size};
 
+/// 取 GIF 首帧作为普通位图，用于转换为静态格式
+pub(super) fn first_frame(data: &[u8]) -> Result<DynamicImage, String> {
+    let frame = GifDecoder::new(Cursor::new(data))
+        .map_err(|error| format!("GIF 解码失败：{error}"))?
+        .into_frames()
+        .next()
+        .ok_or_else(|| "GIF 缺少可用帧".to_string())?
+        .map_err(|error| format!("GIF 解码失败：{error}"))?;
+
+    Ok(DynamicImage::ImageRgba8(frame.into_buffer()))
+}
+
 pub(super) fn process_gif(data: &[u8], options: &ProcessOptions) -> Result<Vec<u8>, String> {
     let frames = GifDecoder::new(Cursor::new(data))
         .map_err(|error| format!("GIF 解码失败：{error}"))?

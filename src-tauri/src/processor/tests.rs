@@ -21,6 +21,9 @@ fn options(mode: &str) -> ProcessOptions {
         max_side: 1000,
         png_lossy: false,
         png_colors: 128,
+        target_format: String::new(),
+        background: "#ffffff".into(),
+        raster_scale: 2.0,
     }
 }
 
@@ -116,7 +119,7 @@ fn png_encode_is_lossless() {
     }
     let image = DynamicImage::ImageRgba8(rgba);
 
-    let encoded = encode(image.clone(), ImageFormat::Png, 82).unwrap();
+    let encoded = encode(image.clone(), ImageFormat::Png, 82, "#ffffff").unwrap();
     let decoded = image::load_from_memory(&encoded).unwrap().to_rgba8();
 
     assert_eq!(decoded, image.to_rgba8());
@@ -206,7 +209,7 @@ fn maintains_line_width_after_resize() {
 fn jpeg_keeps_line_width() {
     for quality in [60u8, 82, 95] {
         let source = white_line_image(128, 2);
-        let encoded = encode(source, ImageFormat::Jpeg, quality).unwrap();
+        let encoded = encode(source, ImageFormat::Jpeg, quality, "#ffffff").unwrap();
         let decoded = image::load_from_memory(&encoded).unwrap();
         let measured = ink_width(&decoded);
 
@@ -266,4 +269,127 @@ fn resizes_animated_gif() {
         (frames[0].buffer().width(), frames[0].buffer().height()),
         (20, 15)
     );
+}
+
+#[test]
+fn converts_png_to_jpeg_with_background() {
+    let directory = std::env::temp_dir();
+    let input = directory.join("my-toolbox-convert-alpha.png");
+
+    let rgba = RgbaImage::from_pixel(20, 20, image::Rgba([255, 0, 0, 0]));
+    DynamicImage::ImageRgba8(rgba)
+        .save(&input)
+        .expect("写入测试图片失败");
+
+    let mut options = options("original");
+    options.target_format = "jpeg".into();
+    options.background = "#00ff00".into();
+
+    let bytes = process(input.to_str().unwrap(), &options).unwrap();
+    let decoded = image::load_from_memory(&bytes).unwrap().to_rgb8();
+    let pixel = decoded.get_pixel(10, 10);
+
+    let near = |value: u8, expected: u8| (value as i16 - expected as i16).abs() <= 6;
+    assert!(near(pixel[1], 255), "绿色底色未铺上：{pixel:?}");
+    assert!(near(pixel[0], 0), "红色分量残留：{pixel:?}");
+    assert!(near(pixel[2], 0), "蓝色分量残留：{pixel:?}");
+
+    let _ = std::fs::remove_file(&input);
+}
+
+#[test]
+fn converts_png_to_png_when_requested() {
+    let directory = std::env::temp_dir();
+    let input = directory.join("my-toolbox-convert-same.png");
+    let output = directory.join("my-toolbox-convert-same-out.png");
+
+    let rgba = RgbaImage::from_pixel(12, 10, image::Rgba([10, 20, 30, 128]));
+    DynamicImage::ImageRgba8(rgba)
+        .save(&input)
+        .expect("写入测试图片失败");
+
+    let mut options = options("original");
+    options.target_format = "png".into();
+
+    let bytes = process(input.to_str().unwrap(), &options).unwrap();
+    std::fs::write(&output, &bytes).unwrap();
+
+    let decoded = image::open(&output).unwrap();
+    assert_eq!((decoded.width(), decoded.height()), (12, 10));
+    assert_eq!(decoded.to_rgba8().get_pixel(0, 0)[3], 128);
+
+    let _ = std::fs::remove_file(&input);
+    let _ = std::fs::remove_file(&output);
+}
+
+#[test]
+fn rasterizes_svg_to_png() {
+    let directory = std::env::temp_dir();
+    let input = directory.join("my-toolbox-convert.svg");
+
+    let svg = r##"<svg xmlns="http://www.w3.org/2000/svg" width="10" height="20"><rect width="10" height="20" fill="#ff0000"/></svg>"##;
+    std::fs::write(&input, svg).unwrap();
+
+    let mut options = options("original");
+    options.target_format = "png".into();
+    options.raster_scale = 2.0;
+
+    let bytes = process(input.to_str().unwrap(), &options).unwrap();
+    let decoded = image::load_from_memory(&bytes).unwrap();
+
+    assert_eq!((decoded.width(), decoded.height()), (20, 40));
+    let pixel = decoded.to_rgba8().get_pixel(10, 20).0;
+    assert!(
+        pixel[0] > 200 && pixel[1] < 40,
+        "SVG 填充色不正确：{pixel:?}"
+    );
+
+    let _ = std::fs::remove_file(&input);
+}
+
+#[test]
+fn keeps_svg_when_target_is_source() {
+    let directory = std::env::temp_dir();
+    let input = directory.join("my-toolbox-convert-keep.svg");
+
+    let svg = "<?xml version=\"1.0\"?>\n<!-- note -->\n<svg xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"10\" height=\"10\" />\n</svg>\n";
+    std::fs::write(&input, svg).unwrap();
+
+    let options = options("original");
+    let bytes = process(input.to_str().unwrap(), &options).unwrap();
+    let text = String::from_utf8(bytes).unwrap();
+
+    assert!(text.starts_with("<svg"));
+    assert!(!text.contains("note"));
+
+    let _ = std::fs::remove_file(&input);
+}
+
+#[test]
+fn converts_gif_to_png_first_frame() {
+    let directory = std::env::temp_dir();
+    let input = directory.join("my-toolbox-convert.gif");
+
+    let mut source = Vec::new();
+    {
+        let mut encoder = GifEncoder::new(&mut source);
+        for color in [255u8, 0] {
+            let frame = RgbaImage::from_pixel(40, 30, image::Rgba([color, 0, 0, 255]));
+            let delay = image::Delay::from_numer_denom_ms(100, 1);
+            encoder
+                .encode_frame(Frame::from_parts(frame, 0, 0, delay))
+                .unwrap();
+        }
+    }
+    std::fs::write(&input, &source).unwrap();
+
+    let mut options = options("original");
+    options.target_format = "png".into();
+
+    let bytes = process(input.to_str().unwrap(), &options).unwrap();
+    let decoded = image::load_from_memory(&bytes).unwrap();
+
+    assert_eq!((decoded.width(), decoded.height()), (40, 30));
+
+    let _ = std::fs::remove_file(&input);
 }
