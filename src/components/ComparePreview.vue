@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { Download, MoveHorizontal } from "lucide-vue-next";
+import { Download, Maximize2, Minimize2, MoveHorizontal } from "lucide-vue-next";
 import { saveImage } from "@/lib/files";
 import { formatBytes, savedPercent } from "@/lib/format";
 import type { ImageItem } from "@/types";
@@ -8,6 +8,8 @@ import type { ImageItem } from "@/types";
 const props = defineProps<{ item: ImageItem | null }>();
 
 const position = ref(50);
+const actualSize = ref(false);
+const canvas = ref<HTMLElement | null>(null);
 let dragging = false;
 
 const result = computed(() => props.item?.result ?? null);
@@ -23,7 +25,29 @@ const beforeStyle = computed(() => ({
   clipPath: `inset(0 ${100 - position.value}% 0 0)`,
 }));
 
-function updatePosition(clientX: number, target: HTMLElement): void {
+const canvasStyle = computed<Record<string, string>>(() => {
+  const item = props.item;
+  const output = result.value;
+  if (!actualSize.value || !item || !output) {
+    return { width: "100%", height: "100%" };
+  }
+  return {
+    width: `${Math.max(item.width, output.width, 1)}px`,
+    height: `${Math.max(item.height, output.height, 1)}px`,
+  };
+});
+
+function imageStyle(width: number, height: number): Record<string, string> {
+  return actualSize.value
+    ? { width: `${Math.max(width, 1)}px`, height: `${Math.max(height, 1)}px` }
+    : { width: "100%", height: "100%" };
+}
+
+function updatePosition(clientX: number): void {
+  const target = canvas.value;
+  if (!target) {
+    return;
+  }
   const rect = target.getBoundingClientRect();
   const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
   position.value = ratio * 100;
@@ -31,14 +55,13 @@ function updatePosition(clientX: number, target: HTMLElement): void {
 
 function onPointerDown(event: PointerEvent): void {
   dragging = true;
-  const target = event.currentTarget as HTMLElement;
-  target.setPointerCapture(event.pointerId);
-  updatePosition(event.clientX, target);
+  (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+  updatePosition(event.clientX);
 }
 
 function onPointerMove(event: PointerEvent): void {
   if (dragging) {
-    updatePosition(event.clientX, event.currentTarget as HTMLElement);
+    updatePosition(event.clientX);
   }
 }
 
@@ -66,6 +89,15 @@ async function download(): Promise<void> {
         <p class="text-ink-3 mt-0.5 text-xs">{{ item.name }}</p>
       </div>
       <div class="flex flex-wrap items-center justify-end gap-2">
+        <button
+          type="button"
+          class="border-line bg-surface-2 text-ink-2 hover:border-line-strong inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11.5px] transition-colors"
+          @click="actualSize = !actualSize"
+        >
+          <Minimize2 v-if="actualSize" :size="13" />
+          <Maximize2 v-else :size="13" />
+          {{ actualSize ? "适应窗口" : "实际像素" }}
+        </button>
         <span
           class="border-line bg-surface-2 text-ink-2 rounded-full border px-2.5 py-1 text-[11.5px]"
         >
@@ -94,37 +126,42 @@ async function download(): Promise<void> {
     </header>
 
     <div
-      class="border-line bg-surface-2 relative mx-4 mt-4 h-[300px] cursor-ew-resize touch-none overflow-hidden rounded-xl border select-none"
+      class="border-line bg-surface-2 relative mx-4 mt-4 h-[300px] cursor-ew-resize touch-none rounded-xl border select-none"
+      :class="actualSize ? 'overflow-auto' : 'overflow-hidden'"
       :style="viewportStyle"
       @pointerdown="onPointerDown"
       @pointermove="onPointerMove"
       @pointerup="onPointerUp"
       @pointercancel="onPointerUp"
     >
-      <img
-        :src="result.url"
-        alt=""
-        class="pointer-events-none absolute inset-0 size-full object-contain"
-        draggable="false"
-      />
-      <div class="absolute inset-0" :style="beforeStyle">
+      <div ref="canvas" class="relative" :style="canvasStyle">
         <img
-          :src="item.url"
+          :src="result.url"
           alt=""
-          class="pointer-events-none absolute inset-0 size-full object-contain"
+          class="pointer-events-none absolute top-0 left-0 object-contain"
+          :style="imageStyle(result.width, result.height)"
           draggable="false"
         />
-      </div>
+        <div class="absolute inset-0" :style="beforeStyle">
+          <img
+            :src="item.url"
+            alt=""
+            class="pointer-events-none absolute top-0 left-0 object-contain"
+            :style="imageStyle(item.width, item.height)"
+            draggable="false"
+          />
+        </div>
 
-      <div
-        class="pointer-events-none absolute inset-y-0 w-0.5 bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.12)]"
-        :style="{ left: `${position}%` }"
-      >
-        <span
-          class="absolute top-1/2 left-1/2 grid size-9 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white text-[#161a26] shadow-[0_6px_18px_rgba(0,0,0,0.28)]"
+        <div
+          class="pointer-events-none absolute inset-y-0 w-0.5 bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.12)]"
+          :style="{ left: `${position}%` }"
         >
-          <MoveHorizontal :size="17" />
-        </span>
+          <span
+            class="absolute top-1/2 left-1/2 grid size-9 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white text-[#161a26] shadow-[0_6px_18px_rgba(0,0,0,0.28)]"
+          >
+            <MoveHorizontal :size="17" />
+          </span>
+        </div>
       </div>
 
       <span
@@ -140,7 +177,11 @@ async function download(): Promise<void> {
     </div>
 
     <footer class="flex items-center justify-between gap-3 px-4 py-4">
-      <span class="text-ink-3 text-xs">拖动滑块对比处理前后</span>
+      <span class="text-ink-3 text-xs">
+        {{
+          actualSize ? "按实际像素显示，可滚动查看细节" : "拖动滑块对比处理前后，或切换实际像素查看"
+        }}
+      </span>
       <button
         type="button"
         class="bg-brand-soft text-brand hover:bg-brand-soft-2 inline-flex h-[30px] items-center gap-1 rounded-lg px-2.5 text-[12.5px] font-medium transition-colors"

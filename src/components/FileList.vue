@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { Download, LoaderCircle, Plus, X } from "lucide-vue-next";
+import { computeTargetSize } from "@/lib/canvasProcess";
 import { formatBytes, formatDims, savedPercent } from "@/lib/format";
-import type { ImageItem } from "@/types";
+import type { ImageItem, ProcessOptions } from "@/types";
 
 const props = defineProps<{
   items: ImageItem[];
   selectedId: string | null;
+  options?: ProcessOptions;
+  busy?: boolean;
+  stale?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -21,6 +25,26 @@ const emit = defineEmits<{
 const totalSize = computed(() => props.items.reduce((sum, item) => sum + item.size, 0));
 const doneItems = computed(() => props.items.filter((item) => item.result));
 
+const previewTargets = computed(() => {
+  const targets: Record<string, { width: number; height: number }> = {};
+  if (!props.options) {
+    return targets;
+  }
+  for (const item of props.items) {
+    if (item.result || !item.width || !item.height) {
+      continue;
+    }
+    if (item.name.toLowerCase().endsWith(".svg")) {
+      continue;
+    }
+    const target = computeTargetSize(item.width, item.height, props.options);
+    if (target.width !== item.width || target.height !== item.height) {
+      targets[item.id] = target;
+    }
+  }
+  return targets;
+});
+
 function changePercent(item: ImageItem): number {
   return item.result ? savedPercent(item.size, item.result.size) : 0;
 }
@@ -34,13 +58,18 @@ function changePercent(item: ImageItem): number {
         <p class="text-ink-3 mt-0.5 text-xs">
           共 {{ items.length }} 张 · {{ formatBytes(totalSize) }}
           <template v-if="doneItems.length"> · 点击图片查看效果预览</template>
+          <template v-if="stale && !busy">
+            · <span class="text-[#a16207]">设置已更改，请重新处理</span>
+          </template>
         </p>
       </div>
       <div class="flex flex-wrap justify-end gap-2">
         <button
           v-if="doneItems.length"
           type="button"
-          class="bg-brand-soft text-brand hover:bg-brand-soft-2 inline-flex h-[30px] items-center gap-1 rounded-lg px-2.5 text-[12.5px] font-medium transition-colors"
+          class="bg-brand-soft text-brand hover:bg-brand-soft-2 inline-flex h-[30px] items-center gap-1 rounded-lg px-2.5 text-[12.5px] font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+          :disabled="stale || busy"
+          :title="stale ? '设置已更改，请重新处理' : undefined"
           @click="emit('downloadAll')"
         >
           <Download :size="14" />
@@ -48,7 +77,8 @@ function changePercent(item: ImageItem): number {
         </button>
         <button
           type="button"
-          class="border-line bg-surface text-ink-2 hover:border-line-strong hover:text-ink inline-flex h-[30px] items-center gap-1 rounded-lg border px-2.5 text-[12.5px] font-medium transition-colors"
+          class="border-line bg-surface text-ink-2 hover:border-line-strong hover:text-ink inline-flex h-[30px] items-center gap-1 rounded-lg border px-2.5 text-[12.5px] font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+          :disabled="busy"
           @click="emit('add')"
         >
           <Plus :size="14" />
@@ -56,7 +86,8 @@ function changePercent(item: ImageItem): number {
         </button>
         <button
           type="button"
-          class="text-ink-3 hover:bg-surface-2 hover:text-ink-2 inline-flex h-[30px] items-center rounded-lg border border-transparent px-2.5 text-[12.5px] font-medium transition-colors"
+          class="text-ink-3 hover:bg-surface-2 hover:text-ink-2 inline-flex h-[30px] items-center rounded-lg border border-transparent px-2.5 text-[12.5px] font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+          :disabled="busy"
           @click="emit('clear')"
         >
           清空
@@ -104,6 +135,12 @@ function changePercent(item: ImageItem): number {
                 <span>·</span>
                 <span class="text-ink-2">{{ formatBytes(item.result.size) }}</span>
               </template>
+              <template v-else-if="previewTargets[item.id]">
+                <span>→</span>
+                <span class="text-ink-2" title="预计输出尺寸">
+                  {{ previewTargets[item.id]?.width }}×{{ previewTargets[item.id]?.height }}
+                </span>
+              </template>
             </template>
           </p>
         </div>
@@ -137,16 +174,18 @@ function changePercent(item: ImageItem): number {
           <button
             v-if="item.result"
             type="button"
-            class="text-ink-3 hover:bg-surface-3 hover:text-ink-2 grid size-8 place-items-center rounded-lg transition-colors"
+            class="text-ink-3 hover:bg-surface-3 hover:text-ink-2 grid size-8 place-items-center rounded-lg transition-colors disabled:cursor-not-allowed disabled:opacity-40"
             title="下载"
+            :disabled="stale || busy"
             @click.stop="emit('download', item.id)"
           >
             <Download :size="15" />
           </button>
           <button
             type="button"
-            class="text-ink-3 hover:bg-surface-3 hover:text-ink-2 grid size-8 place-items-center rounded-lg transition-colors"
+            class="text-ink-3 hover:bg-surface-3 hover:text-ink-2 grid size-8 place-items-center rounded-lg transition-colors disabled:cursor-not-allowed disabled:opacity-40"
             title="移除"
+            :disabled="busy"
             @click.stop="emit('remove', item.id)"
           >
             <X :size="15" />

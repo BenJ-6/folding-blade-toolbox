@@ -1,4 +1,4 @@
-import { computed, reactive, ref, type Ref } from "vue";
+import { computed, reactive, ref, watch, type Ref } from "vue";
 import { isTauri, makeOutputName, processWithRust, resolveOutputMime } from "@/lib/backend";
 import { processWithCanvas } from "@/lib/canvasProcess";
 import {
@@ -32,6 +32,7 @@ export interface ImageQueue {
   selectedItem: Ref<ImageItem | null>;
   picking: Ref<boolean>;
   processing: Ref<boolean>;
+  stale: Ref<boolean>;
   progress: Ref<{ done: number; total: number }>;
   options: ProcessOptions;
   pick: () => Promise<AddSummary>;
@@ -42,6 +43,7 @@ export interface ImageQueue {
   clear: () => void;
   resetOptions: () => void;
   processAll: () => Promise<void>;
+  cancelProcessing: () => void;
 }
 
 export function createImageQueue(overrides: Partial<ProcessOptions> = {}): ImageQueue {
@@ -49,9 +51,26 @@ export function createImageQueue(overrides: Partial<ProcessOptions> = {}): Image
   const selectedId = ref<string | null>(null);
   const picking = ref(false);
   const processing = ref(false);
+  const stale = ref(false);
   const progress = ref({ done: 0, total: 0 });
   const defaults: ProcessOptions = { ...DEFAULT_OPTIONS, ...overrides };
   const options = reactive<ProcessOptions>({ ...defaults });
+  let cancelRequested = false;
+  let staleAfterRun = false;
+
+  watch(
+    options,
+    () => {
+      if (processing.value) {
+        staleAfterRun = true;
+        return;
+      }
+      if (items.value.some((item) => item.result)) {
+        stale.value = true;
+      }
+    },
+    { deep: true },
+  );
 
   const selectedItem = computed(
     () => items.value.find((item) => item.id === selectedId.value) ?? null,
@@ -77,8 +96,13 @@ export function createImageQueue(overrides: Partial<ProcessOptions> = {}): Image
   }
 
   async function addPicked(picked: PickedFile[]): Promise<AddSummary> {
+    if (processing.value) {
+      return { added: 0, skipped: picked.length };
+    }
+
     const accepted = picked.filter((item) => isAcceptedImage(item.name));
     const summary: AddSummary = { added: 0, skipped: picked.length - accepted.length };
+    const added: ImageItem[] = [];
 
     for (const pickedFile of accepted) {
       const item = reactive<ImageItem>({
@@ -93,9 +117,11 @@ export function createImageQueue(overrides: Partial<ProcessOptions> = {}): Image
         status: "pending",
       });
       items.value.push(item);
-      summary.added += 1;
-      await loadItem(item);
+      added.push(item);
     }
+
+    summary.added = added.length;
+    await Promise.all(added.map((item) => loadItem(item)));
 
     return summary;
   }
@@ -125,6 +151,9 @@ export function createImageQueue(overrides: Partial<ProcessOptions> = {}): Image
   }
 
   function remove(id: string): void {
+    if (processing.value) {
+      return;
+    }
     const index = items.value.findIndex((item) => item.id === id);
     if (index === -1) {
       return;
@@ -143,6 +172,9 @@ export function createImageQueue(overrides: Partial<ProcessOptions> = {}): Image
   }
 
   function clear(): void {
+    if (processing.value) {
+      return;
+    }
     for (const item of items.value) {
       URL.revokeObjectURL(item.url);
       if (item.result) {
@@ -159,18 +191,25 @@ export function createImageQueue(overrides: Partial<ProcessOptions> = {}): Image
 
   async function processItem(
     item: ImageItem,
+    runOptions: ProcessOptions,
   ): Promise<{ blob: Blob; mime: string; fileName: string }> {
     const sourceMime = guessMime(item.name);
     const mime = resolveOutputMime(sourceMime);
-    const fileName = makeOutputName(item.name, options.suffix, mime);
+    const fileName = makeOutputName(item.name, runOptions.suffix, mime);
 
     if (item.path && isTauri()) {
-      return { blob: await processWithRust(item.path, options, sourceMime), mime, fileName };
+      return { blob: await processWithRust(item.path, runOptions, sourceMime), mime, fileName };
     }
     if (item.blob) {
-      return { blob: await processWithCanvas(item.blob, options, sourceMime), mime, fileName };
+      return { blob: await processWithCanvas(item.blob, runOptions, sourceMime), mime, fileName };
     }
     throw new Error("缺少图片数据");
+  }
+
+  function cancelProcessing(): void {
+    if (processing.value) {
+      cancelRequested = true;
+    }
   }
 
   async function processAll(): Promise<void> {
@@ -178,10 +217,18 @@ export function createImageQueue(overrides: Partial<ProcessOptions> = {}): Image
       return;
     }
 
+    const runOptions: ProcessOptions = { ...options };
+    const processedIds = new Set<string>();
     processing.value = true;
+    cancelRequested = false;
+    staleAfterRun = false;
+    stale.value = true;
     progress.value = { done: 0, total: items.value.length };
 
     for (const item of items.value) {
+      if (cancelRequested) {
+        break;
+      }
       if (!item.path && !item.blob) {
         progress.value.done += 1;
         continue;
@@ -191,7 +238,7 @@ export function createImageQueue(overrides: Partial<ProcessOptions> = {}): Image
       item.error = undefined;
 
       try {
-        const processed = await processItem(item);
+        const processed = await processItem(item, runOptions);
         if (item.result) {
           URL.revokeObjectURL(item.result.url);
         }
@@ -217,6 +264,7 @@ export function createImageQueue(overrides: Partial<ProcessOptions> = {}): Image
           fileName: processed.fileName,
         };
         item.status = "done";
+        processedIds.add(item.id);
       } catch (error) {
         item.status = "error";
         item.error = error instanceof Error ? error.message : "处理失败";
@@ -226,7 +274,20 @@ export function createImageQueue(overrides: Partial<ProcessOptions> = {}): Image
       await new Promise((resolve) => window.setTimeout(resolve, 0));
     }
 
+    if (cancelRequested) {
+      for (const item of items.value) {
+        if (item.status === "processing") {
+          item.status = "pending";
+        }
+      }
+    }
+
     processing.value = false;
+    stale.value = cancelRequested
+      ? items.value.some((item) => item.result && !processedIds.has(item.id))
+      : staleAfterRun;
+    cancelRequested = false;
+    staleAfterRun = false;
   }
 
   return {
@@ -235,6 +296,7 @@ export function createImageQueue(overrides: Partial<ProcessOptions> = {}): Image
     selectedItem,
     picking,
     processing,
+    stale,
     progress,
     options,
     pick,
@@ -245,5 +307,6 @@ export function createImageQueue(overrides: Partial<ProcessOptions> = {}): Image
     clear,
     resetOptions,
     processAll,
+    cancelProcessing,
   };
 }

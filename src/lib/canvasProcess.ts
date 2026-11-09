@@ -21,9 +21,15 @@ export function computeTargetSize(
     targetHeight = height * scale;
   } else if (options.resizeMode === "fixed") {
     if (options.keepRatio) {
-      const scale = Math.min(options.width / width, options.height / height);
-      targetWidth = width * scale;
-      targetHeight = height * scale;
+      if (options.fixedSide === "height") {
+        const scale = options.height / height;
+        targetWidth = width * scale;
+        targetHeight = options.height;
+      } else {
+        const scale = options.width / width;
+        targetWidth = options.width;
+        targetHeight = height * scale;
+      }
     } else {
       targetWidth = options.width;
       targetHeight = options.height;
@@ -32,6 +38,9 @@ export function computeTargetSize(
     const scale = Math.min(1, options.maxSide / Math.max(width, height));
     targetWidth = width * scale;
     targetHeight = height * scale;
+  } else if (options.resizeMode === "crop") {
+    targetWidth = options.width;
+    targetHeight = options.height;
   }
 
   return {
@@ -66,14 +75,25 @@ export async function processWithCanvas(
       context.fillRect(0, 0, target.width, target.height);
     }
 
-    drawHighQuality(
-      context,
-      decoded.source,
-      decoded.width,
-      decoded.height,
-      target.width,
-      target.height,
-    );
+    if (options.resizeMode === "crop") {
+      drawCover(
+        context,
+        decoded.source,
+        decoded.width,
+        decoded.height,
+        target.width,
+        target.height,
+      );
+    } else {
+      drawHighQuality(
+        context,
+        decoded.source,
+        decoded.width,
+        decoded.height,
+        target.width,
+        target.height,
+      );
+    }
 
     const output = await new Promise<Blob>((resolve, reject) => {
       canvas.toBlob(
@@ -91,6 +111,24 @@ export async function processWithCanvas(
   } finally {
     decoded.dispose();
   }
+}
+
+function drawCover(
+  context: CanvasRenderingContext2D,
+  source: CanvasImageSource,
+  sourceWidth: number,
+  sourceHeight: number,
+  targetWidth: number,
+  targetHeight: number,
+): void {
+  const scale = Math.max(targetWidth / sourceWidth, targetHeight / sourceHeight);
+  const cropWidth = targetWidth / scale;
+  const cropHeight = targetHeight / scale;
+  const cropX = (sourceWidth - cropWidth) / 2;
+  const cropY = (sourceHeight - cropHeight) / 2;
+
+  context.imageSmoothingQuality = "high";
+  context.drawImage(source, cropX, cropY, cropWidth, cropHeight, 0, 0, targetWidth, targetHeight);
 }
 
 function drawHighQuality(

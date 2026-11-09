@@ -16,7 +16,7 @@ use serde::Deserialize;
 use self::encode::{encode, encode_png_lossy, optimize_png};
 use self::exif::{apply_orientation, read_orientation};
 use self::gif::process_gif;
-use self::resize::{resize_image, target_size};
+use self::resize::{resize_crop, resize_image, target_size};
 use self::svg::{is_svg, process_svg};
 
 #[derive(Debug, Clone, Deserialize)]
@@ -28,6 +28,8 @@ pub struct ProcessOptions {
     pub width: u32,
     pub height: u32,
     pub keep_ratio: bool,
+    #[serde(default = "default_fixed_side")]
+    pub fixed_side: String,
     pub max_side: u32,
     #[serde(default)]
     pub png_lossy: bool,
@@ -37,6 +39,10 @@ pub struct ProcessOptions {
 
 fn default_png_colors() -> u32 {
     128
+}
+
+fn default_fixed_side() -> String {
+    "width".to_string()
 }
 
 pub fn process(path: &str, options: &ProcessOptions) -> Result<Vec<u8>, String> {
@@ -65,7 +71,11 @@ pub fn process(path: &str, options: &ProcessOptions) -> Result<Vec<u8>, String> 
     let (width, height) = target_size(image.width(), image.height(), options);
     let resized = (width, height) != (image.width(), image.height());
     if resized {
-        image = resize_image(image, width, height);
+        image = if options.resize_mode == "crop" {
+            resize_crop(image, width, height)
+        } else {
+            resize_image(image, width, height)
+        };
     }
 
     let output_format = format;

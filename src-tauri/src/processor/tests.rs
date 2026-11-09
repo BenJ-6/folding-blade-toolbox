@@ -5,7 +5,7 @@ use image::{AnimationDecoder, DynamicImage, Frame, ImageFormat, Rgb, RgbImage, R
 
 use super::encode::{encode, encode_png_lossy};
 use super::gif::process_gif;
-use super::resize::{resize_image, target_size};
+use super::resize::{resize_crop, resize_image, target_size};
 use super::svg::process_svg;
 use super::{ProcessOptions, process};
 
@@ -17,6 +17,7 @@ fn options(mode: &str) -> ProcessOptions {
         width: 800,
         height: 600,
         keep_ratio: true,
+        fixed_side: "width".into(),
         max_side: 1000,
         png_lossy: false,
         png_colors: 128,
@@ -49,10 +50,37 @@ fn does_not_upscale_for_max_mode() {
 }
 
 #[test]
+fn fixed_height_drives_scaled_width() {
+    let mut options = options("fixed");
+    options.fixed_side = "height".into();
+    assert_eq!(target_size(1600, 1000, &options), (960, 600));
+}
+
+#[test]
 fn stretches_when_ratio_unlocked() {
     let mut options = options("fixed");
     options.keep_ratio = false;
     assert_eq!(target_size(1600, 1000, &options), (800, 600));
+}
+
+#[test]
+fn crop_uses_exact_target_size() {
+    let mut options = options("crop");
+    options.width = 400;
+    options.height = 400;
+    assert_eq!(target_size(1600, 1000, &options), (400, 400));
+}
+
+#[test]
+fn crop_fills_target_without_stretching() {
+    let source = DynamicImage::ImageRgba8(RgbaImage::from_pixel(
+        100,
+        50,
+        image::Rgba([10, 20, 30, 255]),
+    ));
+    let cropped = resize_crop(source, 40, 40);
+
+    assert_eq!((cropped.width(), cropped.height()), (40, 40));
 }
 
 #[test]

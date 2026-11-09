@@ -6,11 +6,7 @@ export function isTauri(): boolean {
 }
 
 export function resolveOutputMime(sourceMime: string): string {
-  if (
-    sourceMime === "image/png" ||
-    sourceMime === "image/svg+xml" ||
-    sourceMime === "image/gif"
-  ) {
+  if (sourceMime === "image/png" || sourceMime === "image/svg+xml" || sourceMime === "image/gif") {
     return sourceMime;
   }
   return "image/jpeg";
@@ -41,6 +37,7 @@ export async function processWithRust(
     width: options.width,
     height: options.height,
     keepRatio: options.keepRatio,
+    fixedSide: options.fixedSide,
     maxSide: options.maxSide,
     pngLossy: options.pngLossy,
     pngColors: options.pngColors,

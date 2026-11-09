@@ -1,4 +1,4 @@
-export type ResizeMode = "original" | "percent" | "fixed" | "max";
+export type ResizeMode = "original" | "percent" | "fixed" | "max" | "crop";
 
 export type ItemStatus = "pending" | "processing" | "done" | "error";
 
@@ -27,6 +27,8 @@ export interface ImageItem {
   error?: string;
 }
 
+export type FixedSide = "width" | "height";
+
 export interface ProcessOptions {
   quality: number;
   resizeMode: ResizeMode;
@@ -34,6 +36,7 @@ export interface ProcessOptions {
   width: number;
   height: number;
   keepRatio: boolean;
+  fixedSide: FixedSide;
   maxSide: number;
   suffix: string;
   pngLossy: boolean;
@@ -49,6 +52,7 @@ export const DEFAULT_OPTIONS: ProcessOptions = {
   width: 1920,
   height: 1080,
   keepRatio: true,
+  fixedSide: "width",
   maxSide: 1600,
   suffix: "-min",
   pngLossy: false,

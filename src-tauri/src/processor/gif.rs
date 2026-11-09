@@ -4,7 +4,7 @@ use image::codecs::gif::{GifDecoder, GifEncoder, Repeat};
 use image::{AnimationDecoder, DynamicImage, Frame};
 
 use super::ProcessOptions;
-use super::resize::{resize_image, target_size};
+use super::resize::{resize_crop, resize_image, target_size};
 
 pub(super) fn process_gif(data: &[u8], options: &ProcessOptions) -> Result<Vec<u8>, String> {
     let frames = GifDecoder::new(Cursor::new(data))
@@ -19,6 +19,7 @@ pub(super) fn process_gif(data: &[u8], options: &ProcessOptions) -> Result<Vec<u
     let (width, height) = (first.buffer().width(), first.buffer().height());
     let (target_width, target_height) = target_size(width, height, options);
     let resized = (target_width, target_height) != (width, height);
+    let crop = options.resize_mode == "crop";
 
     let mut buffer = Vec::new();
     {
@@ -31,12 +32,13 @@ pub(super) fn process_gif(data: &[u8], options: &ProcessOptions) -> Result<Vec<u
             let delay = frame.delay();
             let buffer = frame.into_buffer();
             let image = if resized {
-                resize_image(
-                    DynamicImage::ImageRgba8(buffer),
-                    target_width,
-                    target_height,
-                )
-                .to_rgba8()
+                let source = DynamicImage::ImageRgba8(buffer);
+                let resized = if crop {
+                    resize_crop(source, target_width, target_height)
+                } else {
+                    resize_image(source, target_width, target_height)
+                };
+                resized.to_rgba8()
             } else {
                 buffer
             };
