@@ -2,7 +2,6 @@
 import {
   FileDown,
   FileText,
-  Layers,
   Palette,
   QrCode,
   RefreshCw,
@@ -16,13 +15,15 @@ import {
     class="border-line bg-surface sticky top-0 flex h-screen w-[236px] shrink-0 flex-col border-r px-3.5 pt-5 pb-4"
   >
     <div class="flex items-center gap-3 px-2 pb-5">
-      <div
-        class="bg-brand-gradient grid size-[34px] place-items-center rounded-[10px] text-white shadow-[0_8px_16px_-8px_rgba(99,102,241,0.7)]"
-      >
-        <Layers :size="19" :stroke-width="1.7" />
-      </div>
+      <img
+        src="/toolbox-logo.svg"
+        alt=""
+        width="34"
+        height="34"
+        class="shrink-0 rounded-[8px] shadow-[0_8px_16px_-8px_rgba(23,78,64,0.65)]"
+      />
       <div>
-        <p class="text-[15px] font-semibold tracking-[-0.01em]">Toolbox</p>
+        <p class="text-[15px] font-semibold tracking-[-0.01em]">折刀雀工具箱</p>
         <p class="text-ink-3 text-[11.5px]">本地工具集</p>
       </div>
     </div>
