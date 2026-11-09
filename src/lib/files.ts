@@ -14,12 +14,13 @@ const MIME_BY_EXT: Record<string, string> = {
   png: "image/png",
   svg: "image/svg+xml",
   gif: "image/gif",
+  webp: "image/webp",
+  bmp: "image/bmp",
 };
 
-const DIALOG_FILTER = {
-  name: "图片",
-  extensions: [...ACCEPTED_EXTENSIONS],
-};
+function dialogFilter(extensions: string[]): { name: string; extensions: string[] } {
+  return { name: "图片", extensions: [...extensions] };
+}
 
 export const ACCEPT_ATTRIBUTE = ACCEPTED_EXTENSIONS.map((ext) => `.${ext}`).join(",");
 
@@ -37,26 +38,28 @@ export function guessMime(name: string): string {
   return MIME_BY_EXT[ext] ?? "application/octet-stream";
 }
 
-export async function pickImages(): Promise<PickedFile[]> {
+export async function pickImages(
+  extensions: string[] = ACCEPTED_EXTENSIONS,
+): Promise<PickedFile[]> {
   if (inTauri()) {
     const selection = await open({
       multiple: true,
       directory: false,
-      filters: [DIALOG_FILTER],
+      filters: [dialogFilter(extensions)],
     });
     const paths = typeof selection === "string" ? [selection] : (selection ?? []);
     return paths.map((path) => ({ path, name: path.split(/[\\/]/).pop() ?? path }));
   }
 
-  const files = await pickWithInput();
+  const files = await pickWithInput(extensions);
   return files.map((file) => ({ file, name: file.name }));
 }
 
-function pickWithInput(): Promise<File[]> {
+function pickWithInput(extensions: string[]): Promise<File[]> {
   return new Promise((resolve) => {
     const input = document.createElement("input");
     input.type = "file";
-    input.accept = ACCEPT_ATTRIBUTE;
+    input.accept = extensions.map((ext) => `.${ext}`).join(",");
     input.multiple = true;
     input.style.display = "none";
 

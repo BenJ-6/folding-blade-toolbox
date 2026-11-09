@@ -98,15 +98,19 @@ import {
       </span>
     </div>
 
-    <div
-      class="text-ink-3 flex h-[38px] items-center gap-2.5 rounded-[10px] px-2.5 text-[13.5px] font-medium"
-    >
-      <QrCode :size="17" />
-      <span>二维码</span>
-      <span class="bg-surface-3 ml-auto rounded-[5px] px-1.5 py-0.5 text-[10.5px] font-medium">
-        即将
-      </span>
-    </div>
+    <RouterLink v-slot="{ isActive, navigate }" to="/qrcode" custom>
+      <button
+        type="button"
+        class="flex h-[38px] w-full items-center gap-2.5 rounded-[10px] px-2.5 text-left text-[13.5px] font-medium transition-colors"
+        :class="
+          isActive ? 'bg-brand-soft text-brand font-semibold' : 'text-ink-2 hover:bg-surface-2'
+        "
+        @click="navigate"
+      >
+        <QrCode :size="17" />
+        二维码
+      </button>
+    </RouterLink>
 
     <div
       class="text-ink-3 flex h-[38px] items-center gap-2.5 rounded-[10px] px-2.5 text-[13.5px] font-medium"
