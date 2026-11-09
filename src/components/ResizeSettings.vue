@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { Crop, LoaderCircle, Lock, Scaling, Unlock } from "lucide-vue-next";
-import { computeTargetSize } from "@/lib/canvasProcess";
 import { resizeQueue } from "@/stores/queues";
 import type { ResizeMode } from "@/types";
 
@@ -32,25 +31,7 @@ const percentFill = computed<Record<string, string>>(() => ({
 }));
 
 const sampleItem = computed(() => selectedItem.value ?? items.value[0] ?? null);
-const sampleLabel = computed(() => (selectedItem.value ? "当前图片输出" : "首张图片输出"));
 const isSvg = computed(() => sampleItem.value?.name.toLowerCase().endsWith(".svg") ?? false);
-
-const targetPreview = computed(() => {
-  const item = sampleItem.value;
-  if (!item || !item.width || !item.height || isSvg.value) {
-    return null;
-  }
-  return computeTargetSize(item.width, item.height, options);
-});
-
-const sizeChanged = computed(() => {
-  const item = sampleItem.value;
-  const target = targetPreview.value;
-  if (!item || !target) {
-    return false;
-  }
-  return item.width !== target.width || item.height !== target.height;
-});
 
 const widthAuto = computed(() => options.keepRatio && options.fixedSide === "height");
 const heightAuto = computed(() => options.keepRatio && options.fixedSide === "width");
@@ -307,21 +288,8 @@ function normalizeMaxSide(): void {
 
         <p v-else class="text-ink-3 text-[11.5px]">不改变宽高，仅以较高画质重新编码</p>
 
-        <div
-          v-if="targetPreview && sampleItem"
-          class="bg-surface-2 text-ink-2 flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-[11.5px]"
-        >
-          <span class="text-ink-3">{{ sampleLabel }}</span>
-          <span class="font-semibold">
-            <template v-if="sizeChanged">
-              {{ sampleItem.width }}×{{ sampleItem.height }} →
-            </template>
-            {{ targetPreview.width }}×{{ targetPreview.height }}
-            <span v-if="!sizeChanged" class="text-ink-3 font-normal">（尺寸不变）</span>
-          </span>
-        </div>
         <p
-          v-else-if="isSvg"
+          v-if="isSvg"
           class="rounded-lg bg-[#fff8e6] px-3 py-2 text-[11.5px] leading-relaxed text-[#a16207]"
         >
           SVG 是矢量图，尺寸设置不生效，仅做无损精简

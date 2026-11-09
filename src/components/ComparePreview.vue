@@ -5,7 +5,10 @@ import { saveImage } from "@/lib/files";
 import { formatBytes, savedPercent } from "@/lib/format";
 import type { ImageItem } from "@/types";
 
-const props = defineProps<{ item: ImageItem | null }>();
+const props = defineProps<{
+  item: ImageItem | null;
+  metric?: "size" | "dimension";
+}>();
 
 const position = ref(50);
 const actualSize = ref(false);
@@ -13,9 +16,41 @@ const canvas = ref<HTMLElement | null>(null);
 let dragging = false;
 
 const result = computed(() => props.item?.result ?? null);
-const change = computed(() =>
-  props.item && result.value ? savedPercent(props.item.size, result.value.size) : 0,
-);
+
+const change = computed(() => {
+  const item = props.item;
+  const output = result.value;
+  if (!item || !output) {
+    return 0;
+  }
+  if (props.metric === "dimension") {
+    if (!item.width || !item.height) {
+      return 0;
+    }
+    return Math.round(
+      (1 - Math.sqrt((output.width * output.height) / (item.width * item.height))) * 100,
+    );
+  }
+  return savedPercent(item.size, output.size);
+});
+
+const changeLabel = computed(() => {
+  const value = change.value;
+  if (props.metric === "dimension") {
+    return value > 0 ? `缩小 ${value}%` : value < 0 ? `放大 ${Math.abs(value)}%` : "尺寸不变";
+  }
+  return value > 0 ? `节省 ${value}%` : value < 0 ? `增大 ${Math.abs(value)}%` : "体积不变";
+});
+
+const changeClass = computed(() => {
+  if (change.value === 0) {
+    return "bg-surface-3 text-ink-2";
+  }
+  if (props.metric === "dimension") {
+    return "bg-brand-soft text-brand";
+  }
+  return change.value > 0 ? "bg-success-soft text-success" : "text-danger bg-[#fdecec]";
+});
 
 const viewportStyle = computed<Record<string, string>>(() => ({
   "--pos": `${position.value}%`,
@@ -99,7 +134,12 @@ async function download(): Promise<void> {
           {{ actualSize ? "适应窗口" : "实际像素" }}
         </button>
         <span
-          class="border-line bg-surface-2 text-ink-2 rounded-full border px-2.5 py-1 text-[11.5px]"
+          class="rounded-full border px-2.5 py-1 text-[11.5px]"
+          :class="
+            metric === 'dimension'
+              ? 'border-brand-soft-2 bg-brand-soft text-brand font-semibold'
+              : 'border-line bg-surface-2 text-ink-2'
+          "
         >
           {{ item.width }}×{{ item.height }} → {{ result.width }}×{{ result.height }}
         </span>
@@ -108,19 +148,8 @@ async function download(): Promise<void> {
         >
           {{ formatBytes(item.size) }} → {{ formatBytes(result.size) }}
         </span>
-        <span
-          class="rounded-full px-2.5 py-1 text-[11.5px] font-semibold"
-          :class="
-            change > 0
-              ? 'bg-success-soft text-success'
-              : change < 0
-                ? 'text-danger bg-[#fdecec]'
-                : 'bg-surface-3 text-ink-2'
-          "
-        >
-          {{
-            change > 0 ? `节省 ${change}%` : change < 0 ? `增大 ${Math.abs(change)}%` : "体积不变"
-          }}
+        <span class="rounded-full px-2.5 py-1 text-[11.5px] font-semibold" :class="changeClass">
+          {{ changeLabel }}
         </span>
       </div>
     </header>

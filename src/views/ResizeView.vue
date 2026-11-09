@@ -82,6 +82,7 @@ async function handleDownloadAll(): Promise<void> {
           :items="items"
           :selected-id="selectedId"
           :options="options"
+          metric="dimension"
           :busy="processing"
           :stale="stale"
           @select="handleSelect"
@@ -91,7 +92,7 @@ async function handleDownloadAll(): Promise<void> {
           @download="handleDownload"
           @download-all="handleDownloadAll"
         />
-        <ComparePreview :item="previewItem" />
+        <ComparePreview :item="previewItem" metric="dimension" />
       </div>
 
       <ResizeSettings />

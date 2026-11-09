@@ -9,6 +9,7 @@ const props = defineProps<{
   items: ImageItem[];
   selectedId: string | null;
   options?: ProcessOptions;
+  metric?: "size" | "dimension";
   busy?: boolean;
   stale?: boolean;
 }>();
@@ -45,8 +46,38 @@ const previewTargets = computed(() => {
   return targets;
 });
 
-function changePercent(item: ImageItem): number {
-  return item.result ? savedPercent(item.size, item.result.size) : 0;
+function changeValue(item: ImageItem): number {
+  if (!item.result) {
+    return 0;
+  }
+  if (props.metric === "dimension") {
+    if (!item.width || !item.height) {
+      return 0;
+    }
+    const before = item.width * item.height;
+    const after = item.result.width * item.result.height;
+    return Math.round((1 - Math.sqrt(after / before)) * 100);
+  }
+  return savedPercent(item.size, item.result.size);
+}
+
+function changeLabel(item: ImageItem): string {
+  const value = changeValue(item);
+  if (props.metric === "dimension") {
+    return value > 0 ? `缩小 ${value}%` : value < 0 ? `放大 ${Math.abs(value)}%` : "尺寸不变";
+  }
+  return value > 0 ? `−${value}%` : value < 0 ? `+${Math.abs(value)}%` : "持平";
+}
+
+function changeClass(item: ImageItem): string {
+  const value = changeValue(item);
+  if (value === 0) {
+    return "bg-surface-3 text-ink-2";
+  }
+  if (props.metric === "dimension") {
+    return "bg-brand-soft text-brand";
+  }
+  return value > 0 ? "bg-success-soft text-success" : "text-danger bg-[#fdecec]";
 }
 </script>
 
@@ -129,15 +160,32 @@ function changePercent(item: ImageItem): number {
               <span>{{ formatBytes(item.size) }}</span>
               <template v-if="item.result">
                 <span>→</span>
-                <span class="text-ink-2">{{
-                  formatDims(item.result.width, item.result.height)
-                }}</span>
+                <span
+                  :class="
+                    metric === 'dimension'
+                      ? 'bg-brand-soft text-brand rounded-md px-1.5 py-0.5 font-semibold tabular-nums'
+                      : 'text-ink-2'
+                  "
+                >
+                  {{ formatDims(item.result.width, item.result.height) }}
+                </span>
                 <span>·</span>
-                <span class="text-ink-2">{{ formatBytes(item.result.size) }}</span>
+                <span
+                  :class="
+                    metric === 'size'
+                      ? 'bg-brand-soft text-brand rounded-md px-1.5 py-0.5 font-semibold'
+                      : 'text-ink-2'
+                  "
+                >
+                  {{ formatBytes(item.result.size) }}
+                </span>
               </template>
               <template v-else-if="previewTargets[item.id]">
                 <span>→</span>
-                <span class="text-ink-2" title="预计输出尺寸">
+                <span
+                  class="bg-brand-soft text-brand border-brand-soft-2 rounded-md border border-dashed px-1.5 py-0.5 font-semibold tabular-nums"
+                  title="预计输出尺寸"
+                >
                   {{ previewTargets[item.id]?.width }}×{{ previewTargets[item.id]?.height }}
                 </span>
               </template>
@@ -153,21 +201,10 @@ function changePercent(item: ImageItem): number {
         <span
           v-else-if="item.result"
           class="shrink-0 rounded-full px-2 py-0.5 text-[11.5px] font-semibold"
-          :class="
-            changePercent(item) > 0
-              ? 'bg-success-soft text-success'
-              : changePercent(item) < 0
-                ? 'text-danger bg-[#fdecec]'
-                : 'bg-surface-3 text-ink-2'
-          "
+          :class="changeClass(item)"
+          :title="metric === 'dimension' ? '尺寸变化' : '体积变化'"
         >
-          {{
-            changePercent(item) > 0
-              ? `−${changePercent(item)}%`
-              : changePercent(item) < 0
-                ? `+${Math.abs(changePercent(item))}%`
-                : "持平"
-          }}
+          {{ changeLabel(item) }}
         </span>
 
         <div class="flex shrink-0 items-center gap-1">

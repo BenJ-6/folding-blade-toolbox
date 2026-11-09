@@ -80,6 +80,7 @@ async function handleDownloadAll(): Promise<void> {
           v-if="items.length"
           :items="items"
           :selected-id="selectedId"
+          metric="size"
           :busy="processing"
           :stale="stale"
           @select="handleSelect"
