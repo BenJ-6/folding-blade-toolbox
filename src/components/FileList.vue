@@ -33,9 +33,10 @@ function changePercent(item: ImageItem): number {
         <p class="text-sm font-semibold">图片列表</p>
         <p class="text-ink-3 mt-0.5 text-xs">
           共 {{ items.length }} 张 · {{ formatBytes(totalSize) }}
+          <template v-if="doneItems.length"> · 点击图片查看效果预览</template>
         </p>
       </div>
-      <div class="flex gap-2">
+      <div class="flex flex-wrap justify-end gap-2">
         <button
           v-if="doneItems.length"
           type="button"

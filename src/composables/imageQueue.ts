@@ -37,7 +37,7 @@ export interface ImageQueue {
   pick: () => Promise<AddSummary>;
   addFiles: (files: File[]) => Promise<AddSummary>;
   addPaths: (paths: string[]) => Promise<AddSummary>;
-  select: (id: string) => void;
+  select: (id: string | null) => void;
   remove: (id: string) => void;
   clear: () => void;
   resetOptions: () => void;
@@ -68,9 +68,6 @@ export function createImageQueue(): ImageQueue {
         item.height = decoded.height;
       } finally {
         decoded.dispose();
-      }
-      if (!selectedId.value) {
-        selectedId.value = item.id;
       }
     } catch (error) {
       item.status = "error";
@@ -122,7 +119,7 @@ export function createImageQueue(): ImageQueue {
     return addPicked(paths.map((path) => ({ path, name: path.split(/[\\/]/).pop() ?? path })));
   }
 
-  function select(id: string): void {
+  function select(id: string | null): void {
     selectedId.value = id;
   }
 
@@ -140,7 +137,7 @@ export function createImageQueue(): ImageQueue {
     items.value.splice(index, 1);
 
     if (selectedId.value === id) {
-      selectedId.value = items.value[index]?.id ?? items.value[index - 1]?.id ?? null;
+      selectedId.value = null;
     }
   }
 

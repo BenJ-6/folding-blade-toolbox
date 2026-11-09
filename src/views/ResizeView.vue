@@ -32,12 +32,11 @@ const { dragActive } = useFileDrop({
   },
 });
 
-const previewItem = computed(() => {
-  if (selectedItem.value?.result) {
-    return selectedItem.value;
-  }
-  return items.value.find((item) => item.result) ?? null;
-});
+const previewItem = computed(() => (selectedItem.value?.result ? selectedItem.value : null));
+
+function handleSelect(id: string): void {
+  select(selectedId.value === id ? null : id);
+}
 
 async function handlePick(): Promise<void> {
   try {
@@ -87,7 +86,7 @@ async function handleDownloadAll(): Promise<void> {
           v-if="items.length"
           :items="items"
           :selected-id="selectedId"
-          @select="select"
+          @select="handleSelect"
           @remove="remove"
           @clear="clear"
           @add="handlePick"
