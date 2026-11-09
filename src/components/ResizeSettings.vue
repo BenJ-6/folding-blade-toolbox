@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import { LoaderCircle, Lock, Scaling, Unlock } from "lucide-vue-next";
 import { resizeQueue } from "@/stores/queues";
-import type { OutputFormat, ResizeMode } from "@/types";
+import type { ResizeMode } from "@/types";
 
 const { items, options, processing, progress, resetOptions, processAll } = resizeQueue;
 
@@ -11,12 +11,6 @@ const resizeModes: { value: ResizeMode; label: string }[] = [
   { value: "percent", label: "按比例缩放" },
   { value: "fixed", label: "指定宽高" },
   { value: "max", label: "限制最长边" },
-];
-
-const formatOptions: { value: OutputFormat; label: string }[] = [
-  { value: "auto", label: "自动" },
-  { value: "jpeg", label: "JPG" },
-  { value: "png", label: "PNG" },
 ];
 
 const percentFill = computed<Record<string, string>>(() => ({
@@ -148,26 +142,6 @@ const percentFill = computed<Record<string, string>>(() => ({
         </div>
 
         <p v-else class="text-ink-3 text-[11.5px]">仅重新编码，不改变图片宽高</p>
-      </div>
-
-      <div class="flex flex-col gap-2.5">
-        <p class="text-ink-2 text-[12.5px] font-semibold">输出格式</p>
-        <div class="border-line bg-surface-2 flex gap-0.5 rounded-[10px] border p-[3px]">
-          <button
-            v-for="option in formatOptions"
-            :key="option.value"
-            type="button"
-            class="h-[30px] flex-1 rounded-lg text-[12.5px] font-medium transition-colors"
-            :class="
-              options.format === option.value
-                ? 'bg-surface text-ink shadow-card'
-                : 'text-ink-2 hover:text-ink'
-            "
-            @click="options.format = option.value"
-          >
-            {{ option.label }}
-          </button>
-        </div>
       </div>
 
       <div class="flex flex-col gap-2.5">

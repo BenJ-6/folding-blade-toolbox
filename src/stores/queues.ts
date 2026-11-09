@@ -1,4 +1,4 @@
 import { createImageQueue } from "@/composables/imageQueue";
 
-export const compressQueue = createImageQueue();
+export const compressQueue = createImageQueue({ pngLossy: true });
 export const resizeQueue = createImageQueue();

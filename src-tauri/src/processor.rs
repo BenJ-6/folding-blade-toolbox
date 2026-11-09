@@ -8,7 +8,6 @@ use serde::Deserialize;
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ProcessOptions {
-    pub format: String,
     pub quality: u8,
     pub resize_mode: String,
     pub percent: f32,
@@ -47,11 +46,7 @@ pub fn process(path: &str, options: &ProcessOptions) -> Result<Vec<u8>, String> 
         image = resize_image(image, width, height);
     }
 
-    let output_format = match options.format.as_str() {
-        "jpeg" => ImageFormat::Jpeg,
-        "png" => ImageFormat::Png,
-        _ => format,
-    };
+    let output_format = format;
 
     // PNG 有损量化：减少颜色数，显著压缩体积
     if output_format == ImageFormat::Png && options.png_lossy {
@@ -291,7 +286,6 @@ mod tests {
 
     fn options(mode: &str) -> ProcessOptions {
         ProcessOptions {
-            format: "auto".into(),
             quality: 82,
             resize_mode: mode.into(),
             percent: 50.0,
@@ -349,7 +343,6 @@ mod tests {
         image::DynamicImage::ImageRgba8(rgba).save(&input).unwrap();
 
         let mut options = options("percent");
-        options.format = "png".into();
         options.percent = 50.0;
 
         let bytes = process(input.to_str().unwrap(), &options).unwrap();

@@ -1,5 +1,3 @@
-export type OutputFormat = "auto" | "jpeg" | "png";
-
 export type ResizeMode = "original" | "percent" | "fixed" | "max";
 
 export type ItemStatus = "pending" | "processing" | "done" | "error";
@@ -30,7 +28,6 @@ export interface ImageItem {
 }
 
 export interface ProcessOptions {
-  format: OutputFormat;
   quality: number;
   resizeMode: ResizeMode;
   percent: number;
@@ -46,7 +43,6 @@ export interface ProcessOptions {
 export const ACCEPTED_EXTENSIONS = ["jpg", "jpeg", "png", "svg", "gif"];
 
 export const DEFAULT_OPTIONS: ProcessOptions = {
-  format: "auto",
   quality: 82,
   resizeMode: "original",
   percent: 100,

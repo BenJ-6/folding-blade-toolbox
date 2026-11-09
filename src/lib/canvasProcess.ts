@@ -60,7 +60,7 @@ export async function processWithCanvas(
       throw new Error("Canvas 不可用");
     }
 
-    const mime = resolveOutputMime(sourceMime, options.format);
+    const mime = resolveOutputMime(sourceMime);
     if (mime === "image/jpeg") {
       context.fillStyle = "#ffffff";
       context.fillRect(0, 0, target.width, target.height);

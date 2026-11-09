@@ -44,13 +44,14 @@ export interface ImageQueue {
   processAll: () => Promise<void>;
 }
 
-export function createImageQueue(): ImageQueue {
+export function createImageQueue(overrides: Partial<ProcessOptions> = {}): ImageQueue {
   const items = ref<ImageItem[]>([]);
   const selectedId = ref<string | null>(null);
   const picking = ref(false);
   const processing = ref(false);
   const progress = ref({ done: 0, total: 0 });
-  const options = reactive<ProcessOptions>({ ...DEFAULT_OPTIONS });
+  const defaults: ProcessOptions = { ...DEFAULT_OPTIONS, ...overrides };
+  const options = reactive<ProcessOptions>({ ...defaults });
 
   const selectedItem = computed(
     () => items.value.find((item) => item.id === selectedId.value) ?? null,
@@ -153,14 +154,14 @@ export function createImageQueue(): ImageQueue {
   }
 
   function resetOptions(): void {
-    Object.assign(options, DEFAULT_OPTIONS);
+    Object.assign(options, defaults);
   }
 
   async function processItem(
     item: ImageItem,
   ): Promise<{ blob: Blob; mime: string; fileName: string }> {
     const sourceMime = guessMime(item.name);
-    const mime = resolveOutputMime(sourceMime, options.format);
+    const mime = resolveOutputMime(sourceMime);
     const fileName = makeOutputName(item.name, options.suffix, mime);
 
     if (item.path && isTauri()) {

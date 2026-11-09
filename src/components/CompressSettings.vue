@@ -2,15 +2,8 @@
 import { computed } from "vue";
 import { LoaderCircle, SlidersHorizontal, Zap } from "lucide-vue-next";
 import { compressQueue } from "@/stores/queues";
-import type { OutputFormat } from "@/types";
 
 const { items, options, processing, progress, resetOptions, processAll } = compressQueue;
-
-const formatOptions: { value: OutputFormat; label: string }[] = [
-  { value: "auto", label: "自动" },
-  { value: "jpeg", label: "JPG" },
-  { value: "png", label: "PNG" },
-];
 
 const qualityFill = computed<Record<string, string>>(() => ({
   "--fill": `${options.quality}%`,
@@ -37,27 +30,6 @@ const pngColorOptions = [256, 128, 64, 32];
 
     <div class="flex flex-col gap-5 px-5 pt-4 pb-1">
       <div class="flex flex-col gap-2.5">
-        <p class="text-ink-2 text-[12.5px] font-semibold">输出格式</p>
-        <div class="border-line bg-surface-2 flex gap-0.5 rounded-[10px] border p-[3px]">
-          <button
-            v-for="option in formatOptions"
-            :key="option.value"
-            type="button"
-            class="h-[30px] flex-1 rounded-lg text-[12.5px] font-medium transition-colors"
-            :class="
-              options.format === option.value
-                ? 'bg-surface text-ink shadow-card'
-                : 'text-ink-2 hover:text-ink'
-            "
-            @click="options.format = option.value"
-          >
-            {{ option.label }}
-          </button>
-        </div>
-        <p class="text-ink-3 text-[11.5px] leading-relaxed">自动 = 保持原格式；JPG 支持画质压缩</p>
-      </div>
-
-      <div v-if="options.format !== 'jpeg'" class="flex flex-col gap-2.5">
         <div class="flex items-start justify-between gap-3">
           <div>
             <p class="text-ink-2 text-[12.5px] font-semibold">PNG 有损压缩</p>
@@ -103,10 +75,7 @@ const pngColorOptions = [256, 128, 64, 32];
       <div class="flex flex-col gap-2.5">
         <div class="flex items-center justify-between">
           <p class="text-ink-2 text-[12.5px] font-semibold">压缩质量</p>
-          <span
-            class="bg-brand-soft text-brand rounded-md px-2 py-0.5 text-[11.5px] font-semibold"
-            :class="options.format === 'png' ? 'opacity-50' : ''"
-          >
+          <span class="bg-brand-soft text-brand rounded-md px-2 py-0.5 text-[11.5px] font-semibold">
             {{ options.quality }}
           </span>
         </div>
@@ -116,15 +85,10 @@ const pngColorOptions = [256, 128, 64, 32];
           min="1"
           max="100"
           class="range-slider"
-          :disabled="options.format === 'png'"
           :style="qualityFill"
         />
         <p class="text-ink-3 text-[11.5px] leading-relaxed">
-          {{
-            options.format === "png"
-              ? "PNG 为无损格式，质量参数不生效；重编码变大时会保留原图"
-              : "数值越低，体积越小，画质损失越明显"
-          }}
+          数值越低，体积越小，画质损失越明显；仅对 JPG 生效
         </p>
       </div>
 
