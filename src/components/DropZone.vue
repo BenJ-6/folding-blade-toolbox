@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ImagePlus, Plus, Upload } from "lucide-vue-next";
+import { ACCEPTED_EXTENSIONS } from "@/types";
 
 defineProps<{
   active: boolean;
@@ -8,6 +9,10 @@ defineProps<{
 }>();
 
 const emit = defineEmits<{ pick: [] }>();
+
+const formatLabel = [...new Set(ACCEPTED_EXTENSIONS.map((ext) => (ext === "jpeg" ? "jpg" : ext)))]
+  .map((ext) => ext.toUpperCase())
+  .join(" / ");
 </script>
 
 <template>
@@ -29,7 +34,7 @@ const emit = defineEmits<{ pick: [] }>();
         <Upload :size="24" :stroke-width="1.7" />
       </div>
       <p class="text-ink text-[15px] font-semibold">拖拽图片到这里</p>
-      <p class="text-ink-3 mt-1 text-[12.5px]">支持 JPG / PNG / WebP / BMP，可一次添加多张</p>
+      <p class="text-ink-3 mt-1 text-[12.5px]">支持 {{ formatLabel }}，可一次添加多张</p>
       <div class="mt-4">
         <span
           class="bg-brand-gradient inline-flex h-9 items-center gap-1.5 rounded-[10px] px-4 text-[12.5px] font-semibold text-white shadow-[0_10px_20px_-12px_rgba(99,102,241,0.8)]"
@@ -56,7 +61,7 @@ const emit = defineEmits<{ pick: [] }>();
     </div>
     <div class="min-w-0">
       <p class="text-ink text-[13px] font-medium">继续添加图片</p>
-      <p class="text-ink-3 truncate text-[11.5px]">拖拽到此，或点击选择 · JPG / PNG / WebP / BMP</p>
+      <p class="text-ink-3 truncate text-[11.5px]">拖拽到此，或点击选择 · {{ formatLabel }}</p>
     </div>
     <button
       type="button"
@@ -81,9 +86,7 @@ const emit = defineEmits<{ pick: [] }>();
           <Upload :size="32" :stroke-width="1.7" />
         </div>
         <p class="text-ink text-lg font-semibold">松开鼠标，添加图片</p>
-        <p class="text-ink-3 mt-1.5 text-[13px]">
-          整个页面均可拖拽 · 支持 JPG / PNG / WebP / BMP
-        </p>
+        <p class="text-ink-3 mt-1.5 text-[13px]">整个页面均可拖拽 · 支持 {{ formatLabel }}</p>
       </div>
     </div>
   </Teleport>

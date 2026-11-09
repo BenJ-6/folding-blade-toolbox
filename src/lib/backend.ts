@@ -6,8 +6,12 @@ export function isTauri(): boolean {
 }
 
 export function resolveOutputMime(sourceMime: string): string {
-  if (sourceMime === "image/png") {
-    return "image/png";
+  if (
+    sourceMime === "image/png" ||
+    sourceMime === "image/svg+xml" ||
+    sourceMime === "image/gif"
+  ) {
+    return sourceMime;
   }
   return "image/jpeg";
 }

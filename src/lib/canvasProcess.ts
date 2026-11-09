@@ -46,7 +46,7 @@ export async function processWithCanvas(
   sourceMime: string,
 ): Promise<Blob> {
   if (sourceMime === "image/svg+xml" || sourceMime === "image/gif") {
-    throw new Error("SVG / GIF 处理将在后续阶段接入");
+    throw new Error("SVG / GIF 压缩需要在桌面应用中使用");
   }
 
   const decoded = await decodeImage(blob);
