@@ -35,6 +35,17 @@
   background-image: linear-gradient(135deg, #6366f1, #8b5cf6);
 }
 
+@utility bg-checkerboard {
+  background-color: #ffffff;
+  background-image: conic-gradient(
+    #e3e7f0 0deg 90deg,
+    #ffffff 90deg 180deg,
+    #e3e7f0 180deg 270deg,
+    #ffffff 270deg 360deg
+  );
+  background-size: 12px 12px;
+}
+
 @layer base {
   html,
   body,

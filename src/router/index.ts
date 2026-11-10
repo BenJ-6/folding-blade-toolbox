@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory } from "vue-router";
+import ColorView from "@/views/ColorView.vue";
 import CompressView from "@/views/CompressView.vue";
 import ConvertView from "@/views/ConvertView.vue";
 import QrCodeView from "@/views/QrCodeView.vue";
@@ -12,5 +13,6 @@ export const router = createRouter({
     { path: "/resize", name: "resize", component: ResizeView },
     { path: "/convert", name: "convert", component: ConvertView },
     { path: "/qrcode", name: "qrcode", component: QrCodeView },
+    { path: "/color", name: "color", component: ColorView },
   ],
 });

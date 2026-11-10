@@ -4,6 +4,7 @@ import { getCurrentWebview } from "@tauri-apps/api/webview";
 interface FileDropHandlers {
   onPaths: (paths: string[]) => void;
   onFiles: (files: File[]) => void;
+  isActive?: () => boolean;
 }
 
 function inTauri(): boolean {
@@ -15,11 +16,16 @@ export function useFileDrop(handlers: FileDropHandlers) {
   let unlisten: (() => void) | undefined;
   let disposed = false;
 
+  const canHandle = (): boolean => handlers.isActive?.() ?? true;
+
   const hasFiles = (event: DragEvent): boolean =>
     event.dataTransfer?.types.includes("Files") ?? false;
 
   const onDragEnter = (event: DragEvent): void => {
     event.preventDefault();
+    if (!canHandle()) {
+      return;
+    }
     if (hasFiles(event)) {
       dragActive.value = true;
     }
@@ -27,6 +33,9 @@ export function useFileDrop(handlers: FileDropHandlers) {
 
   const onDragOver = (event: DragEvent): void => {
     event.preventDefault();
+    if (!canHandle()) {
+      return;
+    }
     if (hasFiles(event)) {
       dragActive.value = true;
     }
@@ -41,6 +50,9 @@ export function useFileDrop(handlers: FileDropHandlers) {
   const onDrop = (event: DragEvent): void => {
     event.preventDefault();
     dragActive.value = false;
+    if (!canHandle()) {
+      return;
+    }
     const files = Array.from(event.dataTransfer?.files ?? []);
     if (files.length) {
       handlers.onFiles(files);
@@ -58,12 +70,16 @@ export function useFileDrop(handlers: FileDropHandlers) {
         .onDragDropEvent((event) => {
           const payload = event.payload;
           if (payload.type === "enter" || payload.type === "over") {
-            dragActive.value = true;
+            if (canHandle()) {
+              dragActive.value = true;
+            }
           } else if (payload.type === "leave") {
             dragActive.value = false;
           } else if (payload.type === "drop") {
             dragActive.value = false;
-            handlers.onPaths(payload.paths);
+            if (canHandle()) {
+              handlers.onPaths(payload.paths);
+            }
           }
         })
         .then((stop) => {
