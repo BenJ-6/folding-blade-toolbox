@@ -89,8 +89,8 @@ fn crop_fills_target_without_stretching() {
 #[test]
 fn processes_png_file() {
     let directory = std::env::temp_dir();
-    let input = directory.join("my-toolbox-test-input.png");
-    let output = directory.join("my-toolbox-test-output.png");
+    let input = directory.join("folding-blade-toolbox-test-input.png");
+    let output = directory.join("folding-blade-toolbox-test-output.png");
 
     let mut rgba = image::RgbaImage::new(100, 80);
     for (x, y, pixel) in rgba.enumerate_pixels_mut() {
@@ -274,7 +274,7 @@ fn resizes_animated_gif() {
 #[test]
 fn converts_png_to_jpeg_with_background() {
     let directory = std::env::temp_dir();
-    let input = directory.join("my-toolbox-convert-alpha.png");
+    let input = directory.join("folding-blade-toolbox-convert-alpha.png");
 
     let rgba = RgbaImage::from_pixel(20, 20, image::Rgba([255, 0, 0, 0]));
     DynamicImage::ImageRgba8(rgba)
@@ -300,8 +300,8 @@ fn converts_png_to_jpeg_with_background() {
 #[test]
 fn converts_png_to_png_when_requested() {
     let directory = std::env::temp_dir();
-    let input = directory.join("my-toolbox-convert-same.png");
-    let output = directory.join("my-toolbox-convert-same-out.png");
+    let input = directory.join("folding-blade-toolbox-convert-same.png");
+    let output = directory.join("folding-blade-toolbox-convert-same-out.png");
 
     let rgba = RgbaImage::from_pixel(12, 10, image::Rgba([10, 20, 30, 128]));
     DynamicImage::ImageRgba8(rgba)
@@ -325,7 +325,7 @@ fn converts_png_to_png_when_requested() {
 #[test]
 fn rasterizes_svg_to_png() {
     let directory = std::env::temp_dir();
-    let input = directory.join("my-toolbox-convert.svg");
+    let input = directory.join("folding-blade-toolbox-convert.svg");
 
     let svg = r##"<svg xmlns="http://www.w3.org/2000/svg" width="10" height="20"><rect width="10" height="20" fill="#ff0000"/></svg>"##;
     std::fs::write(&input, svg).unwrap();
@@ -350,7 +350,7 @@ fn rasterizes_svg_to_png() {
 #[test]
 fn keeps_svg_when_target_is_source() {
     let directory = std::env::temp_dir();
-    let input = directory.join("my-toolbox-convert-keep.svg");
+    let input = directory.join("folding-blade-toolbox-convert-keep.svg");
 
     let svg = "<?xml version=\"1.0\"?>\n<!-- note -->\n<svg xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"10\" height=\"10\" />\n</svg>\n";
     std::fs::write(&input, svg).unwrap();
@@ -368,7 +368,7 @@ fn keeps_svg_when_target_is_source() {
 #[test]
 fn converts_gif_to_png_first_frame() {
     let directory = std::env::temp_dir();
-    let input = directory.join("my-toolbox-convert.gif");
+    let input = directory.join("folding-blade-toolbox-convert.gif");
 
     let mut source = Vec::new();
     {

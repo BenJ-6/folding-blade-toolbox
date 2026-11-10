@@ -1,6 +1,6 @@
 import { ref, watch } from "vue";
 
-const STORAGE_KEY = "my-toolbox:recent-colors";
+const STORAGE_KEY = "folding-blade-toolbox:recent-colors";
 const MAX_ITEMS = 18;
 
 function load(): string[] {
