@@ -2,13 +2,14 @@ import { createRouter, createWebHashHistory } from "vue-router";
 import ColorView from "@/views/ColorView.vue";
 import CompressView from "@/views/CompressView.vue";
 import ConvertView from "@/views/ConvertView.vue";
+import HomeView from "@/views/HomeView.vue";
 import QrCodeView from "@/views/QrCodeView.vue";
 import ResizeView from "@/views/ResizeView.vue";
 
 export const router = createRouter({
   history: createWebHashHistory(),
   routes: [
-    { path: "/", redirect: "/compress" },
+    { path: "/", name: "home", component: HomeView },
     { path: "/compress", name: "compress", component: CompressView },
     { path: "/resize", name: "resize", component: ResizeView },
     { path: "/convert", name: "convert", component: ConvertView },
