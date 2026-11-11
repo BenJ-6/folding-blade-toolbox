@@ -30,14 +30,14 @@ const formatLabel = [...new Set(ACCEPTED_EXTENSIONS.map((ext) => (ext === "jpeg"
     @keydown.enter.prevent="emit('pick')"
   >
     <div class="mx-auto flex max-w-[360px] flex-col items-center">
-      <div class="bg-brand-soft text-brand mb-3.5 grid size-12 place-items-center rounded-[14px]">
+      <div class="mb-3.5 grid size-12 place-items-center rounded-[14px] bg-brand-soft text-brand">
         <Upload :size="24" :stroke-width="1.7" />
       </div>
-      <p class="text-ink text-[15px] font-semibold">拖拽图片到这里</p>
-      <p class="text-ink-3 mt-1 text-[12.5px]">支持 {{ formatLabel }}，可一次添加多张</p>
+      <p class="text-[15px] font-semibold text-ink">拖拽图片到这里</p>
+      <p class="mt-1 text-[12.5px] text-ink-3">支持 {{ formatLabel }}，可一次添加多张</p>
       <div class="mt-4">
         <span
-          class="bg-brand-gradient inline-flex h-9 items-center gap-1.5 rounded-[10px] px-4 text-[12.5px] font-semibold text-white shadow-[0_10px_20px_-12px_rgba(99,102,241,0.8)]"
+          class="inline-flex h-9 items-center gap-1.5 rounded-[10px] bg-brand-gradient px-4 text-[12.5px] font-semibold text-white shadow-[0_10px_20px_-12px_rgba(99,102,241,0.8)]"
         >
           <ImagePlus :size="15" />
           {{ picking ? "读取中…" : "选择图片" }}
@@ -56,16 +56,16 @@ const formatLabel = [...new Set(ACCEPTED_EXTENSIONS.map((ext) => (ext === "jpeg"
     "
     @click="emit('pick')"
   >
-    <div class="bg-brand-soft text-brand grid size-9 shrink-0 place-items-center rounded-[10px]">
+    <div class="grid size-9 shrink-0 place-items-center rounded-[10px] bg-brand-soft text-brand">
       <Upload :size="18" :stroke-width="1.7" />
     </div>
     <div class="min-w-0">
-      <p class="text-ink text-[13px] font-medium">继续添加图片</p>
-      <p class="text-ink-3 truncate text-[11.5px]">拖拽到此，或点击选择 · {{ formatLabel }}</p>
+      <p class="text-[13px] font-medium text-ink">继续添加图片</p>
+      <p class="truncate text-[11.5px] text-ink-3">拖拽到此，或点击选择 · {{ formatLabel }}</p>
     </div>
     <button
       type="button"
-      class="border-line bg-surface text-ink-2 hover:border-line-strong hover:text-ink ml-auto inline-flex h-8 shrink-0 items-center gap-1 rounded-lg border px-2.5 text-[12px] font-medium transition-colors disabled:opacity-60"
+      class="ml-auto inline-flex h-8 shrink-0 items-center gap-1 rounded-lg border border-line bg-surface px-2.5 text-[12px] font-medium text-ink-2 transition-colors hover:border-line-strong hover:text-ink disabled:opacity-60"
       :disabled="picking"
       @click.stop="emit('pick')"
     >
@@ -77,16 +77,16 @@ const formatLabel = [...new Set(ACCEPTED_EXTENSIONS.map((ext) => (ext === "jpeg"
   <Teleport to="body">
     <div
       v-if="active"
-      class="bg-page/85 pointer-events-none fixed inset-0 z-50 grid place-items-center p-6 backdrop-blur-sm"
+      class="pointer-events-none fixed inset-0 z-50 grid place-items-center bg-page/85 p-6 backdrop-blur-sm"
     >
       <div
-        class="border-brand bg-surface/95 flex w-full max-w-[560px] flex-col items-center rounded-3xl border-2 border-dashed px-6 py-14 text-center shadow-2xl"
+        class="flex w-full max-w-[560px] flex-col items-center rounded-3xl border-2 border-dashed border-brand bg-surface/95 px-6 py-14 text-center shadow-2xl"
       >
-        <div class="bg-brand-soft text-brand mb-4 grid size-16 place-items-center rounded-2xl">
+        <div class="mb-4 grid size-16 place-items-center rounded-2xl bg-brand-soft text-brand">
           <Upload :size="32" :stroke-width="1.7" />
         </div>
-        <p class="text-ink text-lg font-semibold">松开鼠标，添加图片</p>
-        <p class="text-ink-3 mt-1.5 text-[13px]">整个页面均可拖拽 · 支持 {{ formatLabel }}</p>
+        <p class="text-lg font-semibold text-ink">松开鼠标，添加图片</p>
+        <p class="mt-1.5 text-[13px] text-ink-3">整个页面均可拖拽 · 支持 {{ formatLabel }}</p>
       </div>
     </div>
   </Teleport>

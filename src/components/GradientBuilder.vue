@@ -116,29 +116,29 @@ async function copyGradient(): Promise<void> {
 <template>
   <div class="grid grid-cols-[minmax(0,1fr)_336px] items-start gap-5 max-[980px]:grid-cols-1">
     <div class="flex min-w-0 flex-col gap-4">
-      <section class="border-line bg-surface shadow-card overflow-hidden rounded-2xl border">
-        <header class="border-line flex items-center justify-between gap-3 border-b px-5 py-4">
+      <section class="overflow-hidden rounded-2xl border border-line bg-surface shadow-card">
+        <header class="flex items-center justify-between gap-3 border-b border-line px-5 py-4">
           <h2 class="flex items-center gap-2 text-sm font-semibold">
             <Blend :size="17" class="text-brand" />
             预览
           </h2>
-          <span class="text-ink-3 text-[11.5px]">
+          <span class="text-[11.5px] text-ink-3">
             {{ type === "linear" ? `线性 · ${angle}°` : "径向" }}
           </span>
         </header>
         <div class="px-5 pt-4 pb-5">
           <div
-            class="border-line h-[240px] w-full rounded-xl border"
+            class="h-[240px] w-full rounded-xl border border-line"
             :style="{ backgroundImage: gradient }"
           />
           <div class="mt-3 flex flex-wrap items-center gap-1.5">
             <span
               v-for="(stop, index) in stops"
               :key="stop.id"
-              class="border-line bg-surface-2 text-ink-2 inline-flex h-7 items-center gap-1.5 rounded-md border px-2 font-mono text-[11px] font-medium"
+              class="inline-flex h-7 items-center gap-1.5 rounded-md border border-line bg-surface-2 px-2 font-mono text-[11px] font-medium text-ink-2"
             >
               <span
-                class="border-line size-3 rounded-full border"
+                class="size-3 rounded-full border border-line"
                 :style="{ backgroundColor: stop.color }"
               />
               {{ stop.color.toUpperCase() }}
@@ -148,12 +148,12 @@ async function copyGradient(): Promise<void> {
         </div>
       </section>
 
-      <section class="border-line bg-surface shadow-card overflow-hidden rounded-2xl border">
-        <header class="border-line flex items-center justify-between gap-3 border-b px-5 py-4">
+      <section class="overflow-hidden rounded-2xl border border-line bg-surface shadow-card">
+        <header class="flex items-center justify-between gap-3 border-b border-line px-5 py-4">
           <h2 class="text-sm font-semibold">色标与方向</h2>
           <button
             type="button"
-            class="text-ink-2 hover:text-brand inline-flex items-center gap-1 text-[11.5px] font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+            class="inline-flex items-center gap-1 text-[11.5px] font-medium text-ink-2 transition-colors hover:text-brand disabled:cursor-not-allowed disabled:opacity-40"
             :disabled="stops.length >= 4"
             @click="addStop"
           >
@@ -170,12 +170,12 @@ async function copyGradient(): Promise<void> {
                 :label="`色标 ${index + 1}`"
                 class="min-w-0 flex-1"
               />
-              <span class="text-ink-3 w-9 shrink-0 text-right text-[11px] tabular-nums">
+              <span class="w-9 shrink-0 text-right text-[11px] text-ink-3 tabular-nums">
                 {{ positionOf(index) }}%
               </span>
               <button
                 type="button"
-                class="text-ink-3 hover:bg-surface-3 hover:text-brand grid size-8 shrink-0 place-items-center rounded-lg transition-colors"
+                class="grid size-8 shrink-0 place-items-center rounded-lg text-ink-3 transition-colors hover:bg-surface-3 hover:text-brand"
                 :title="`复制 ${stop.color.toUpperCase()}`"
                 @click="copyColor(stop.color.toUpperCase())"
               >
@@ -183,7 +183,7 @@ async function copyGradient(): Promise<void> {
               </button>
               <button
                 type="button"
-                class="text-ink-3 hover:bg-surface-3 hover:text-danger grid size-8 shrink-0 place-items-center rounded-lg transition-colors disabled:invisible"
+                class="grid size-8 shrink-0 place-items-center rounded-lg text-ink-3 transition-colors hover:bg-surface-3 hover:text-danger disabled:invisible"
                 :disabled="stops.length <= 2"
                 title="移除色标"
                 @click="removeStop(index)"
@@ -191,14 +191,14 @@ async function copyGradient(): Promise<void> {
                 <X :size="14" />
               </button>
             </div>
-            <p class="text-ink-3 text-[11px]">色标位置会自动均匀分布，最多 4 个</p>
+            <p class="text-[11px] text-ink-3">色标位置会自动均匀分布，最多 4 个</p>
           </div>
 
-          <div class="border-line border-t" />
+          <div class="border-t border-line" />
 
           <div class="flex flex-col gap-2">
-            <p class="text-ink-2 text-[12.5px] font-semibold">类型</p>
-            <div class="bg-surface-2 grid w-[220px] grid-cols-2 gap-1 rounded-[10px] p-1">
+            <p class="text-[12.5px] font-semibold text-ink-2">类型</p>
+            <div class="grid w-[220px] grid-cols-2 gap-1 rounded-[10px] bg-surface-2 p-1">
               <button
                 v-for="option in [
                   { value: 'linear' as const, label: '线性渐变' },
@@ -209,8 +209,8 @@ async function copyGradient(): Promise<void> {
                 class="h-8 rounded-lg text-[12px] transition-colors"
                 :class="
                   type === option.value
-                    ? 'bg-surface text-brand shadow-card font-semibold'
-                    : 'text-ink-2 hover:text-ink font-medium'
+                    ? 'bg-surface font-semibold text-brand shadow-card'
+                    : 'font-medium text-ink-2 hover:text-ink'
                 "
                 @click="type = option.value"
               >
@@ -221,17 +221,17 @@ async function copyGradient(): Promise<void> {
 
           <div v-if="type === 'linear'" class="flex flex-col gap-2.5">
             <div class="flex items-center justify-between">
-              <p class="text-ink-2 text-[12.5px] font-semibold">角度</p>
+              <p class="text-[12.5px] font-semibold text-ink-2">角度</p>
               <div class="flex items-center gap-2">
                 <span
-                  class="border-line grid size-7 place-items-center rounded-md border transition-transform"
+                  class="grid size-7 place-items-center rounded-md border border-line transition-transform"
                   :style="{ transform: `rotate(${angle}deg)` }"
                   aria-hidden="true"
                 >
                   <ArrowUp :size="13" class="text-brand" />
                 </span>
                 <span
-                  class="bg-brand-soft text-brand rounded-md px-2 py-0.5 text-[11.5px] font-semibold tabular-nums"
+                  class="rounded-md bg-brand-soft px-2 py-0.5 text-[11.5px] font-semibold text-brand tabular-nums"
                 >
                   {{ angle }}°
                 </span>
@@ -255,7 +255,7 @@ async function copyGradient(): Promise<void> {
                 class="h-7 rounded-lg border text-[11px] font-medium transition-colors"
                 :class="
                   angle === value
-                    ? 'border-brand bg-brand-soft text-brand font-semibold'
+                    ? 'border-brand bg-brand-soft font-semibold text-brand'
                     : 'border-line bg-surface text-ink-2 hover:border-line-strong'
                 "
                 @click="angle = value"
@@ -269,20 +269,20 @@ async function copyGradient(): Promise<void> {
     </div>
 
     <aside class="sticky top-5 flex flex-col gap-4 max-[980px]:static">
-      <section class="border-line bg-surface shadow-card overflow-hidden rounded-2xl border">
-        <header class="border-line flex items-center justify-between gap-3 border-b px-5 py-4">
+      <section class="overflow-hidden rounded-2xl border border-line bg-surface shadow-card">
+        <header class="flex items-center justify-between gap-3 border-b border-line px-5 py-4">
           <h2 class="text-sm font-semibold">CSS</h2>
-          <span class="text-ink-3 text-[11.5px]">可直接用于 background</span>
+          <span class="text-[11.5px] text-ink-3">可直接用于 background</span>
         </header>
         <div class="flex flex-col gap-3 px-5 pt-4 pb-5">
           <code
-            class="border-line bg-surface-2 text-ink-2 block max-h-[140px] overflow-auto rounded-xl border px-3 py-2.5 font-mono text-[11px] leading-relaxed break-all whitespace-pre-wrap"
+            class="block max-h-[140px] overflow-auto rounded-xl border border-line bg-surface-2 px-3 py-2.5 font-mono text-[11px] leading-relaxed break-all whitespace-pre-wrap text-ink-2"
           >
             {{ css }}
           </code>
           <button
             type="button"
-            class="bg-brand-gradient inline-flex h-[42px] w-full items-center justify-center gap-2 rounded-[10px] text-[13.5px] font-semibold text-white transition-all hover:brightness-105"
+            class="inline-flex h-[42px] w-full items-center justify-center gap-2 rounded-[10px] bg-brand-gradient text-[13.5px] font-semibold text-white transition-all hover:brightness-105"
             @click="copyCss"
           >
             <Copy :size="16" />
@@ -292,7 +292,7 @@ async function copyGradient(): Promise<void> {
             <span class="text-ink-3">{{ stops.length }} 个色标</span>
             <button
               type="button"
-              class="text-ink-3 hover:text-brand inline-flex items-center gap-1 transition-colors"
+              class="inline-flex items-center gap-1 text-ink-3 transition-colors hover:text-brand"
               @click="copyGradient"
             >
               <Copy :size="11" />
@@ -302,8 +302,8 @@ async function copyGradient(): Promise<void> {
         </div>
       </section>
 
-      <section class="border-line bg-surface shadow-card overflow-hidden rounded-2xl border">
-        <header class="border-line border-b px-5 py-4">
+      <section class="overflow-hidden rounded-2xl border border-line bg-surface shadow-card">
+        <header class="border-b border-line px-5 py-4">
           <h2 class="text-sm font-semibold">渐变预设</h2>
         </header>
         <div class="grid grid-cols-2 gap-2 px-5 pt-4 pb-5">

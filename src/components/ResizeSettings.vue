@@ -88,15 +88,15 @@ function normalizeMaxSide(): void {
 </script>
 
 <template>
-  <aside class="border-line bg-surface shadow-card sticky top-5 overflow-hidden rounded-2xl border">
-    <header class="border-line flex items-center justify-between border-b px-5 py-4">
+  <aside class="sticky top-5 overflow-hidden rounded-2xl border border-line bg-surface shadow-card">
+    <header class="flex items-center justify-between border-b border-line px-5 py-4">
       <h2 class="flex items-center gap-2 text-sm font-semibold">
         <Scaling :size="17" class="text-brand" />
         尺寸设置
       </h2>
       <button
         type="button"
-        class="text-ink-3 hover:text-brand text-xs transition-colors"
+        class="text-xs text-ink-3 transition-colors hover:text-brand"
         @click="resetOptions"
       >
         恢复默认
@@ -105,7 +105,7 @@ function normalizeMaxSide(): void {
 
     <div class="flex flex-col gap-5 px-5 pt-4 pb-1">
       <div class="flex flex-col gap-2.5">
-        <p class="text-ink-2 text-[12.5px] font-semibold">尺寸调整</p>
+        <p class="text-[12.5px] font-semibold text-ink-2">尺寸调整</p>
         <div class="grid grid-cols-2 gap-2">
           <button
             v-for="mode in resizeModes"
@@ -114,7 +114,7 @@ function normalizeMaxSide(): void {
             class="h-[34px] rounded-[9px] border text-xs font-medium transition-colors"
             :class="[
               options.resizeMode === mode.value
-                ? 'border-brand bg-brand-soft text-brand font-semibold shadow-[0_0_0_3px_rgba(99,102,241,0.08)]'
+                ? 'border-brand bg-brand-soft font-semibold text-brand shadow-[0_0_0_3px_rgba(99,102,241,0.08)]'
                 : 'border-line bg-surface text-ink-2 hover:border-line-strong hover:text-ink',
               mode.value === 'crop' ? 'col-span-2' : '',
             ]"
@@ -126,7 +126,7 @@ function normalizeMaxSide(): void {
 
         <div v-if="options.resizeMode === 'percent'" class="mt-1 flex flex-col gap-2">
           <div class="flex items-center justify-between gap-2">
-            <span class="text-ink-2 text-[12px]">缩放比例</span>
+            <span class="text-[12px] text-ink-2">缩放比例</span>
             <div class="flex items-center gap-1">
               <input
                 v-model.number="options.percent"
@@ -137,7 +137,7 @@ function normalizeMaxSide(): void {
                 class="field h-7 w-16 px-2 text-right text-[11.5px] font-semibold"
                 @change="normalizePercent"
               />
-              <span class="text-ink-3 text-[11.5px]">%</span>
+              <span class="text-[11.5px] text-ink-3">%</span>
             </div>
           </div>
           <input
@@ -165,14 +165,14 @@ function normalizeMaxSide(): void {
               {{ preset }}%
             </button>
           </div>
-          <p class="text-ink-3 text-[11.5px]">100% 为原始大小，可输入 10%–200%</p>
+          <p class="text-[11.5px] text-ink-3">100% 为原始大小，可输入 10%–200%</p>
         </div>
 
         <div v-else-if="options.resizeMode === 'fixed'" class="mt-1 flex flex-col gap-2">
           <div class="grid grid-cols-[1fr_32px_1fr] items-center gap-2">
             <div class="relative" @click="activateSide('width')">
               <span
-                class="text-ink-3 pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-[11.5px]"
+                class="pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-[11.5px] text-ink-3"
               >
                 宽
               </span>
@@ -182,7 +182,7 @@ function normalizeMaxSide(): void {
                 min="1"
                 max="8000"
                 class="field pl-[26px]"
-                :class="widthAuto ? 'text-ink-3 cursor-pointer' : ''"
+                :class="widthAuto ? 'cursor-pointer text-ink-3' : ''"
                 :placeholder="widthAuto ? '自动' : ''"
                 :readonly="widthAuto"
                 @focus="activateSide('width')"
@@ -205,7 +205,7 @@ function normalizeMaxSide(): void {
             </button>
             <div class="relative" @click="activateSide('height')">
               <span
-                class="text-ink-3 pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-[11.5px]"
+                class="pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-[11.5px] text-ink-3"
               >
                 高
               </span>
@@ -215,7 +215,7 @@ function normalizeMaxSide(): void {
                 min="1"
                 max="8000"
                 class="field pl-[26px]"
-                :class="heightAuto ? 'text-ink-3 cursor-pointer' : ''"
+                :class="heightAuto ? 'cursor-pointer text-ink-3' : ''"
                 :placeholder="heightAuto ? '自动' : ''"
                 :readonly="heightAuto"
                 @focus="activateSide('height')"
@@ -223,7 +223,7 @@ function normalizeMaxSide(): void {
               />
             </div>
           </div>
-          <p class="text-ink-3 text-[11.5px]">
+          <p class="text-[11.5px] text-ink-3">
             锁定比例时只填一侧，另一侧显示“自动”并按原图比例计算，点击可切换；解锁后拉伸到目标尺寸
           </p>
         </div>
@@ -239,19 +239,19 @@ function normalizeMaxSide(): void {
               @change="normalizeMaxSide"
             />
             <span
-              class="text-ink-3 pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 text-[11.5px]"
+              class="pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 text-[11.5px] text-ink-3"
             >
               px
             </span>
           </div>
-          <p class="text-ink-3 text-[11.5px]">最长边不超过该值，小图不会被放大</p>
+          <p class="text-[11.5px] text-ink-3">最长边不超过该值，小图不会被放大</p>
         </div>
 
         <div v-else-if="options.resizeMode === 'crop'" class="mt-1 flex flex-col gap-2">
           <div class="grid grid-cols-[1fr_32px_1fr] items-center gap-2">
             <div class="relative">
               <span
-                class="text-ink-3 pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-[11.5px]"
+                class="pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-[11.5px] text-ink-3"
               >
                 宽
               </span>
@@ -264,12 +264,12 @@ function normalizeMaxSide(): void {
                 @change="normalizeWidth"
               />
             </div>
-            <div class="bg-brand-soft text-brand grid size-8 place-items-center rounded-[9px]">
+            <div class="grid size-8 place-items-center rounded-[9px] bg-brand-soft text-brand">
               <Crop :size="15" />
             </div>
             <div class="relative">
               <span
-                class="text-ink-3 pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-[11.5px]"
+                class="pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-[11.5px] text-ink-3"
               >
                 高
               </span>
@@ -283,10 +283,10 @@ function normalizeMaxSide(): void {
               />
             </div>
           </div>
-          <p class="text-ink-3 text-[11.5px]">按比例填满目标框后居中裁剪，输出尺寸精确且不拉伸</p>
+          <p class="text-[11.5px] text-ink-3">按比例填满目标框后居中裁剪，输出尺寸精确且不拉伸</p>
         </div>
 
-        <p v-else class="text-ink-3 text-[11.5px]">不改变宽高，仅以较高画质重新编码</p>
+        <p v-else class="text-[11.5px] text-ink-3">不改变宽高，仅以较高画质重新编码</p>
 
         <p
           v-if="isSvg"
@@ -297,7 +297,7 @@ function normalizeMaxSide(): void {
       </div>
 
       <div class="flex flex-col gap-2.5">
-        <p class="text-ink-2 text-[12.5px] font-semibold">文件名后缀</p>
+        <p class="text-[12.5px] font-semibold text-ink-2">文件名后缀</p>
         <input v-model="options.suffix" type="text" class="field" placeholder="例如 -min" />
         <p
           v-if="!options.suffix.trim()"
@@ -308,7 +308,7 @@ function normalizeMaxSide(): void {
       </div>
     </div>
 
-    <div class="border-line mt-4 flex flex-col gap-2 border-t px-5 py-5">
+    <div class="mt-4 flex flex-col gap-2 border-t border-line px-5 py-5">
       <p
         v-if="stale && !processing"
         class="rounded-lg bg-[#fff8e6] px-3 py-2 text-[11.5px] leading-relaxed text-[#a16207]"
@@ -317,7 +317,7 @@ function normalizeMaxSide(): void {
       </p>
       <button
         type="button"
-        class="bg-brand-gradient inline-flex h-[42px] items-center justify-center gap-2 rounded-[10px] text-[13.5px] font-semibold text-white transition-all hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50"
+        class="inline-flex h-[42px] items-center justify-center gap-2 rounded-[10px] bg-brand-gradient text-[13.5px] font-semibold text-white transition-all hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50"
         :disabled="!items.length || processing"
         @click="processAll"
       >
@@ -329,7 +329,7 @@ function normalizeMaxSide(): void {
             : `${stale ? "重新调整" : "开始调整"}${items.length ? `（${items.length} 张）` : ""}`
         }}
       </button>
-      <div class="text-ink-3 flex items-center justify-center gap-2 text-[11.5px]">
+      <div class="flex items-center justify-center gap-2 text-[11.5px] text-ink-3">
         <span>{{ processing ? "正在本地处理，请稍候" : "图片不会离开你的电脑" }}</span>
         <button
           v-if="processing"

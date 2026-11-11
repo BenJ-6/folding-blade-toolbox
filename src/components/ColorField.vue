@@ -46,11 +46,11 @@ function onPick(event: Event): void {
 
 <template>
   <div
-    class="border-line bg-surface-2 focus-within:border-brand focus-within:bg-surface flex h-9 items-center gap-2 rounded-[9px] border px-2 transition-colors"
+    class="flex h-9 items-center gap-2 rounded-[9px] border border-line bg-surface-2 px-2 transition-colors focus-within:border-brand focus-within:bg-surface"
     :class="invalid ? 'border-danger' : ''"
   >
     <label
-      class="border-line relative size-6 shrink-0 cursor-pointer overflow-hidden rounded-md border"
+      class="relative size-6 shrink-0 cursor-pointer overflow-hidden rounded-md border border-line"
       :style="{ backgroundColor: modelValue }"
       :title="`选择${label ?? '颜色'}`"
     >
@@ -66,7 +66,7 @@ function onPick(event: Event): void {
       v-model="text"
       type="text"
       spellcheck="false"
-      class="text-ink w-full min-w-0 bg-transparent font-mono text-[12px] font-medium uppercase outline-none"
+      class="w-full min-w-0 bg-transparent font-mono text-[12px] font-medium text-ink uppercase outline-none"
       :aria-label="`${label ?? '颜色'}色值`"
       @blur="commit"
       @keydown.enter.prevent="commit"

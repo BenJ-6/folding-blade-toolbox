@@ -30,15 +30,15 @@ function pickFormat(value: TargetFormat): void {
 </script>
 
 <template>
-  <aside class="border-line bg-surface shadow-card sticky top-5 overflow-hidden rounded-2xl border">
-    <header class="border-line flex items-center justify-between border-b px-5 py-4">
+  <aside class="sticky top-5 overflow-hidden rounded-2xl border border-line bg-surface shadow-card">
+    <header class="flex items-center justify-between border-b border-line px-5 py-4">
       <h2 class="flex items-center gap-2 text-sm font-semibold">
         <ArrowRightLeft :size="17" class="text-brand" />
         转换设置
       </h2>
       <button
         type="button"
-        class="text-ink-3 hover:text-brand text-xs transition-colors"
+        class="text-xs text-ink-3 transition-colors hover:text-brand"
         @click="resetOptions"
       >
         恢复默认
@@ -47,7 +47,7 @@ function pickFormat(value: TargetFormat): void {
 
     <div class="flex flex-col gap-5 px-5 pt-4 pb-1">
       <div class="flex flex-col gap-2.5">
-        <p class="text-ink-2 text-[12.5px] font-semibold">目标格式</p>
+        <p class="text-[12.5px] font-semibold text-ink-2">目标格式</p>
         <div class="grid grid-cols-2 gap-2">
           <button
             v-for="format in formats"
@@ -62,18 +62,18 @@ function pickFormat(value: TargetFormat): void {
             @click="pickFormat(format.value)"
           >
             <span class="text-[13px] font-semibold">{{ format.label }}</span>
-            <span class="text-ink-3 text-[11px]">{{ format.desc }}</span>
+            <span class="text-[11px] text-ink-3">{{ format.desc }}</span>
           </button>
         </div>
-        <p class="text-ink-3 text-[11.5px] leading-relaxed">
+        <p class="text-[11.5px] leading-relaxed text-ink-3">
           输出扩展名随目标格式变化；源格式与目标格式相同时仅重新编码
         </p>
       </div>
 
       <div v-if="options.targetFormat === 'jpeg'" class="flex flex-col gap-2.5">
         <div class="flex items-center justify-between">
-          <p class="text-ink-2 text-[12.5px] font-semibold">JPG 质量</p>
-          <span class="bg-brand-soft text-brand rounded-md px-2 py-0.5 text-[11.5px] font-semibold">
+          <p class="text-[12.5px] font-semibold text-ink-2">JPG 质量</p>
+          <span class="rounded-md bg-brand-soft px-2 py-0.5 text-[11.5px] font-semibold text-brand">
             {{ options.quality }}
           </span>
         </div>
@@ -85,10 +85,10 @@ function pickFormat(value: TargetFormat): void {
           class="range-slider"
           :style="qualityFill"
         />
-        <p class="text-ink-3 text-[11.5px] leading-relaxed">数值越低体积越小，画质损失越明显</p>
+        <p class="text-[11.5px] leading-relaxed text-ink-3">数值越低体积越小，画质损失越明显</p>
 
         <div class="flex flex-col gap-2">
-          <p class="text-ink-2 text-[12.5px] font-semibold">透明区域底色</p>
+          <p class="text-[12.5px] font-semibold text-ink-2">透明区域底色</p>
           <div class="flex items-center gap-2">
             <button
               v-for="color in backgroundPresets"
@@ -97,7 +97,7 @@ function pickFormat(value: TargetFormat): void {
               class="size-7 rounded-lg border transition-all"
               :class="
                 options.background.toLowerCase() === color
-                  ? 'border-brand ring-brand-soft-2 ring-2'
+                  ? 'border-brand ring-2 ring-brand-soft-2'
                   : 'border-line'
               "
               :style="{ backgroundColor: color }"
@@ -105,7 +105,7 @@ function pickFormat(value: TargetFormat): void {
               @click="options.background = color"
             />
             <label
-              class="border-line bg-surface text-ink-3 hover:border-line-strong ml-auto inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-lg border px-2 text-[11.5px] transition-colors"
+              class="ml-auto inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-lg border border-line bg-surface px-2 text-[11.5px] text-ink-3 transition-colors hover:border-line-strong"
             >
               自定义
               <input
@@ -115,7 +115,7 @@ function pickFormat(value: TargetFormat): void {
               />
             </label>
           </div>
-          <p class="text-ink-3 text-[11.5px] leading-relaxed">
+          <p class="text-[11.5px] leading-relaxed text-ink-3">
             JPG 不支持透明，透明像素会按该颜色铺平
           </p>
         </div>
@@ -124,8 +124,8 @@ function pickFormat(value: TargetFormat): void {
       <div v-if="options.targetFormat === 'png'" class="flex flex-col gap-2.5">
         <div class="flex items-start justify-between gap-3">
           <div>
-            <p class="text-ink-2 text-[12.5px] font-semibold">PNG 有损量化</p>
-            <p class="text-ink-3 text-[11.5px] leading-relaxed">
+            <p class="text-[12.5px] font-semibold text-ink-2">PNG 有损量化</p>
+            <p class="text-[11.5px] leading-relaxed text-ink-3">
               减少颜色数，体积最多可降 50% 以上
             </p>
           </div>
@@ -152,7 +152,7 @@ function pickFormat(value: TargetFormat): void {
             class="h-8 rounded-lg border text-[11.5px] font-medium transition-colors"
             :class="
               options.pngColors === count
-                ? 'border-brand bg-brand-soft text-brand font-semibold'
+                ? 'border-brand bg-brand-soft font-semibold text-brand'
                 : 'border-line bg-surface text-ink-2 hover:border-line-strong'
             "
             @click="options.pngColors = count"
@@ -161,11 +161,11 @@ function pickFormat(value: TargetFormat): void {
           </button>
         </div>
 
-        <p class="text-ink-3 text-[11.5px] leading-relaxed">关闭时输出无损 PNG</p>
+        <p class="text-[11.5px] leading-relaxed text-ink-3">关闭时输出无损 PNG</p>
       </div>
 
       <div v-if="hasSvg" class="flex flex-col gap-2">
-        <p class="text-ink-2 text-[12.5px] font-semibold">SVG 输出倍数</p>
+        <p class="text-[12.5px] font-semibold text-ink-2">SVG 输出倍数</p>
         <div class="grid grid-cols-3 gap-1.5">
           <button
             v-for="scale in [1, 2, 3]"
@@ -174,7 +174,7 @@ function pickFormat(value: TargetFormat): void {
             class="h-8 rounded-lg border text-[11.5px] font-medium transition-colors"
             :class="
               options.rasterScale === scale
-                ? 'border-brand bg-brand-soft text-brand font-semibold'
+                ? 'border-brand bg-brand-soft font-semibold text-brand'
                 : 'border-line bg-surface text-ink-2 hover:border-line-strong'
             "
             @click="options.rasterScale = scale"
@@ -182,13 +182,13 @@ function pickFormat(value: TargetFormat): void {
             {{ scale }}×
           </button>
         </div>
-        <p class="text-ink-3 text-[11.5px] leading-relaxed">
+        <p class="text-[11.5px] leading-relaxed text-ink-3">
           SVG 按原始尺寸放大该倍数后栅格化，文字使用系统字体
         </p>
       </div>
 
       <div class="flex flex-col gap-2.5">
-        <p class="text-ink-2 text-[12.5px] font-semibold">文件名后缀</p>
+        <p class="text-[12.5px] font-semibold text-ink-2">文件名后缀</p>
         <input v-model="options.suffix" type="text" class="field" placeholder="留空则不加后缀" />
         <p
           v-if="!options.suffix.trim()"
@@ -204,12 +204,12 @@ function pickFormat(value: TargetFormat): void {
         </p>
       </div>
 
-      <p class="text-ink-3 text-[11.5px] leading-relaxed">
+      <p class="text-[11.5px] leading-relaxed text-ink-3">
         仅保留图片方向信息，EXIF 等其他元数据不会写入输出文件
       </p>
     </div>
 
-    <div class="border-line mt-4 flex flex-col gap-2 border-t px-5 py-5">
+    <div class="mt-4 flex flex-col gap-2 border-t border-line px-5 py-5">
       <p
         v-if="stale && !processing"
         class="rounded-lg bg-[#fff8e6] px-3 py-2 text-[11.5px] leading-relaxed text-[#a16207]"
@@ -218,7 +218,7 @@ function pickFormat(value: TargetFormat): void {
       </p>
       <button
         type="button"
-        class="bg-brand-gradient inline-flex h-[42px] items-center justify-center gap-2 rounded-[10px] text-[13.5px] font-semibold text-white transition-all hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50"
+        class="inline-flex h-[42px] items-center justify-center gap-2 rounded-[10px] bg-brand-gradient text-[13.5px] font-semibold text-white transition-all hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50"
         :disabled="!items.length || processing"
         @click="processAll"
       >
@@ -230,7 +230,7 @@ function pickFormat(value: TargetFormat): void {
             : `${stale ? "重新转换" : "开始转换"}${items.length ? `（${items.length} 张）` : ""}`
         }}
       </button>
-      <div class="text-ink-3 flex items-center justify-center gap-2 text-[11.5px]">
+      <div class="flex items-center justify-center gap-2 text-[11.5px] text-ink-3">
         <span>{{ processing ? "正在本地处理，请稍候" : "图片不会离开你的电脑" }}</span>
         <button
           v-if="processing"

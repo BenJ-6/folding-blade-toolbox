@@ -65,15 +65,15 @@ async function copyRatio(): Promise<void> {
 <template>
   <div class="grid grid-cols-[minmax(0,1fr)_336px] items-start gap-5 max-[980px]:grid-cols-1">
     <div class="flex min-w-0 flex-col gap-4">
-      <section class="border-line bg-surface shadow-card overflow-hidden rounded-2xl border">
-        <header class="border-line flex items-center justify-between gap-3 border-b px-5 py-4">
+      <section class="overflow-hidden rounded-2xl border border-line bg-surface shadow-card">
+        <header class="flex items-center justify-between gap-3 border-b border-line px-5 py-4">
           <h2 class="flex items-center gap-2 text-sm font-semibold">
             <Contrast :size="17" class="text-brand" />
             前景与背景
           </h2>
           <button
             type="button"
-            class="text-ink-3 hover:text-brand inline-flex items-center gap-1 text-[11.5px] transition-colors"
+            class="inline-flex items-center gap-1 text-[11.5px] text-ink-3 transition-colors hover:text-brand"
             @click="swap"
           >
             <ArrowLeftRight :size="13" />
@@ -85,12 +85,12 @@ async function copyRatio(): Promise<void> {
           class="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-end gap-2.5 px-5 pt-4 pb-5"
         >
           <div class="flex min-w-0 flex-col gap-1.5">
-            <span class="text-ink-2 text-[12px] font-medium">文字色</span>
+            <span class="text-[12px] font-medium text-ink-2">文字色</span>
             <ColorField v-model="text" label="文字色" />
           </div>
           <button
             type="button"
-            class="border-line bg-surface text-ink-3 hover:border-brand hover:text-brand mb-0.5 grid size-9 shrink-0 place-items-center rounded-lg border transition-colors"
+            class="mb-0.5 grid size-9 shrink-0 place-items-center rounded-lg border border-line bg-surface text-ink-3 transition-colors hover:border-brand hover:text-brand"
             title="交换颜色"
             aria-label="交换颜色"
             @click="swap"
@@ -98,19 +98,19 @@ async function copyRatio(): Promise<void> {
             <ArrowLeftRight :size="15" />
           </button>
           <div class="flex min-w-0 flex-col gap-1.5">
-            <span class="text-ink-2 text-[12px] font-medium">背景色</span>
+            <span class="text-[12px] font-medium text-ink-2">背景色</span>
             <ColorField v-model="background" label="背景色" />
           </div>
         </div>
       </section>
 
-      <section class="border-line bg-surface shadow-card overflow-hidden rounded-2xl border">
-        <header class="border-line flex items-center justify-between gap-3 border-b px-5 py-4">
+      <section class="overflow-hidden rounded-2xl border border-line bg-surface shadow-card">
+        <header class="flex items-center justify-between gap-3 border-b border-line px-5 py-4">
           <h2 class="text-sm font-semibold">阅读效果</h2>
-          <span class="text-ink-3 text-[11.5px]">按当前配色实时渲染</span>
+          <span class="text-[11.5px] text-ink-3">按当前配色实时渲染</span>
         </header>
         <div class="px-5 pt-4 pb-5">
-          <div class="border-line rounded-xl border p-6" :style="{ backgroundColor: background }">
+          <div class="rounded-xl border border-line p-6" :style="{ backgroundColor: background }">
             <p class="text-[28px] leading-[1.25] font-bold" :style="{ color: text }">
               清晰易读的设计
             </p>
@@ -121,7 +121,7 @@ async function copyRatio(): Promise<void> {
               辅助说明文字 · Small text
             </p>
           </div>
-          <p class="text-ink-3 mt-3 text-[11px] leading-relaxed">
+          <p class="mt-3 text-[11px] leading-relaxed text-ink-3">
             WCAG 将 18.66px 加粗或 24px 以上的文字视为大号文字，大号文字可接受更低的对比度。
           </p>
         </div>
@@ -129,9 +129,9 @@ async function copyRatio(): Promise<void> {
     </div>
 
     <aside
-      class="border-line bg-surface shadow-card sticky top-5 overflow-hidden rounded-2xl border max-[980px]:static max-[980px]:order-first"
+      class="sticky top-5 overflow-hidden rounded-2xl border border-line bg-surface shadow-card max-[980px]:static max-[980px]:order-first"
     >
-      <header class="border-line flex items-center justify-between gap-3 border-b px-5 py-4">
+      <header class="flex items-center justify-between gap-3 border-b border-line px-5 py-4">
         <h2 class="text-sm font-semibold">对比度</h2>
         <span
           class="rounded-md px-2 py-0.5 text-[11px] font-semibold"
@@ -149,12 +149,12 @@ async function copyRatio(): Promise<void> {
 
       <div class="flex flex-col gap-4 px-5 pt-4 pb-5">
         <div>
-          <p class="text-ink-3 text-[11.5px]">当前对比度</p>
+          <p class="text-[11.5px] text-ink-3">当前对比度</p>
           <div class="mt-0.5 flex items-end gap-2">
             <p class="text-[40px] leading-none font-bold tracking-[-0.03em] tabular-nums">
               {{ ratio.toFixed(2) }}
             </p>
-            <span class="text-ink-3 mb-1 text-[13px] font-medium">:1</span>
+            <span class="mb-1 text-[13px] font-medium text-ink-3">:1</span>
           </div>
         </div>
 
@@ -166,43 +166,43 @@ async function copyRatio(): Promise<void> {
             :class="check.pass ? 'border-success/25 bg-success-soft' : 'border-line bg-surface-2'"
           >
             <div>
-              <p class="text-ink-2 text-[11.5px] font-medium">{{ check.label }}</p>
-              <p class="text-ink-3 text-[10.5px] tabular-nums">对比度 {{ check.detail }}</p>
+              <p class="text-[11.5px] font-medium text-ink-2">{{ check.label }}</p>
+              <p class="text-[10.5px] text-ink-3 tabular-nums">对比度 {{ check.detail }}</p>
             </div>
-            <Check v-if="check.pass" :size="15" class="text-success shrink-0" />
-            <X v-else :size="14" class="text-ink-3 shrink-0" />
+            <Check v-if="check.pass" :size="15" class="shrink-0 text-success" />
+            <X v-else :size="14" class="shrink-0 text-ink-3" />
           </div>
         </div>
 
         <div
           v-if="suggestion"
-          class="border-line bg-surface-2 flex flex-col gap-2 rounded-xl border p-3"
+          class="flex flex-col gap-2 rounded-xl border border-line bg-surface-2 p-3"
         >
           <div class="flex items-center gap-2">
             <span
-              class="border-line size-7 shrink-0 rounded-md border"
+              class="size-7 shrink-0 rounded-md border border-line"
               :style="{ backgroundColor: suggestion }"
             />
             <div class="min-w-0 flex-1">
-              <p class="text-ink-3 text-[10.5px]">推荐文字色</p>
+              <p class="text-[10.5px] text-ink-3">推荐文字色</p>
               <p class="font-mono text-[11.5px] font-semibold">{{ suggestion.toUpperCase() }}</p>
             </div>
             <button
               type="button"
-              class="bg-brand-soft text-brand hover:bg-brand-soft-2 shrink-0 rounded-md px-2 py-1 text-[11px] font-semibold transition-colors"
+              class="shrink-0 rounded-md bg-brand-soft px-2 py-1 text-[11px] font-semibold text-brand transition-colors hover:bg-brand-soft-2"
               @click="applySuggestion"
             >
               应用
             </button>
           </div>
-          <p class="text-ink-3 text-[10.5px] leading-relaxed">
+          <p class="text-[10.5px] leading-relaxed text-ink-3">
             保持色相不变，仅调整明度，使其达到 AA 正文标准
           </p>
         </div>
 
         <p
           v-else-if="passed"
-          class="bg-success-soft text-success rounded-lg px-3 py-2 text-[11.5px] leading-relaxed"
+          class="rounded-lg bg-success-soft px-3 py-2 text-[11.5px] leading-relaxed text-success"
         >
           当前配色已通过 WCAG AA 正文标准，适合用于正文文字
         </p>
@@ -215,7 +215,7 @@ async function copyRatio(): Promise<void> {
 
         <button
           type="button"
-          class="border-line bg-surface text-ink-2 hover:border-line-strong hover:text-ink inline-flex h-9 items-center justify-center gap-1.5 rounded-[9px] border text-[12px] font-medium transition-colors"
+          class="inline-flex h-9 items-center justify-center gap-1.5 rounded-[9px] border border-line bg-surface text-[12px] font-medium text-ink-2 transition-colors hover:border-line-strong hover:text-ink"
           @click="copyRatio"
         >
           <Copy :size="13" />

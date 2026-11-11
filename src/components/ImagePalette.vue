@@ -269,13 +269,13 @@ function clearPicked(): void {
       v-if="!ready"
       class="grid grid-cols-[minmax(0,1fr)_320px] items-start gap-4 max-[900px]:grid-cols-1"
     >
-      <section class="border-line bg-surface shadow-card overflow-hidden rounded-2xl border">
-        <header class="border-line flex items-center justify-between gap-3 border-b px-5 py-4">
+      <section class="overflow-hidden rounded-2xl border border-line bg-surface shadow-card">
+        <header class="flex items-center justify-between gap-3 border-b border-line px-5 py-4">
           <h2 class="flex items-center gap-2 text-sm font-semibold">
             <Pipette :size="17" class="text-brand" />
             图片取色
           </h2>
-          <span class="text-ink-3 text-[11.5px]">支持 PNG / JPG / WebP / GIF / BMP</span>
+          <span class="text-[11.5px] text-ink-3">支持 PNG / JPG / WebP / GIF / BMP</span>
         </header>
         <div class="px-5 pt-4 pb-5">
           <div
@@ -292,16 +292,16 @@ function clearPicked(): void {
           >
             <div class="mx-auto flex max-w-[380px] flex-col items-center">
               <div
-                class="bg-brand-soft text-brand mb-3.5 grid size-12 place-items-center rounded-[14px]"
+                class="mb-3.5 grid size-12 place-items-center rounded-[14px] bg-brand-soft text-brand"
               >
                 <ImageDown :size="24" :stroke-width="1.7" />
               </div>
-              <p class="text-ink text-[15px] font-semibold">拖拽图片到这里</p>
-              <p class="text-ink-3 mt-1 text-[12.5px] leading-relaxed">
+              <p class="text-[15px] font-semibold text-ink">拖拽图片到这里</p>
+              <p class="mt-1 text-[12.5px] leading-relaxed text-ink-3">
                 点击图片任意位置取色，同时自动提取图片主色
               </p>
               <span
-                class="bg-brand-gradient mt-4 inline-flex h-9 items-center gap-1.5 rounded-[10px] px-4 text-[12.5px] font-semibold text-white shadow-[0_10px_20px_-12px_rgba(99,102,241,0.8)]"
+                class="mt-4 inline-flex h-9 items-center gap-1.5 rounded-[10px] bg-brand-gradient px-4 text-[12.5px] font-semibold text-white shadow-[0_10px_20px_-12px_rgba(99,102,241,0.8)]"
               >
                 <Upload :size="15" />
                 {{ picking ? "读取中…" : "选择图片" }}
@@ -311,23 +311,23 @@ function clearPicked(): void {
         </div>
       </section>
 
-      <aside class="border-line bg-surface shadow-card rounded-2xl border p-5">
+      <aside class="rounded-2xl border border-line bg-surface p-5 shadow-card">
         <h3 class="text-sm font-semibold">怎么用</h3>
         <ol class="mt-3.5 flex flex-col gap-3.5">
           <li v-for="(step, index) in STEPS" :key="step.title" class="flex gap-2.5">
             <span
-              class="bg-brand-soft text-brand grid size-6 shrink-0 place-items-center rounded-md text-[11px] font-bold"
+              class="grid size-6 shrink-0 place-items-center rounded-md bg-brand-soft text-[11px] font-bold text-brand"
             >
               {{ index + 1 }}
             </span>
             <div class="min-w-0">
-              <p class="text-ink-2 text-[12px] font-medium">{{ step.title }}</p>
-              <p class="text-ink-3 mt-0.5 text-[11px] leading-relaxed">{{ step.desc }}</p>
+              <p class="text-[12px] font-medium text-ink-2">{{ step.title }}</p>
+              <p class="mt-0.5 text-[11px] leading-relaxed text-ink-3">{{ step.desc }}</p>
             </div>
           </li>
         </ol>
         <div
-          class="bg-success-soft text-success mt-4 rounded-lg px-3 py-2 text-[11px] leading-relaxed"
+          class="mt-4 rounded-lg bg-success-soft px-3 py-2 text-[11px] leading-relaxed text-success"
         >
           图片只在本地解析，不会上传到任何服务器
         </div>
@@ -338,16 +338,16 @@ function clearPicked(): void {
       v-else
       class="grid grid-cols-[minmax(0,1fr)_320px] items-start gap-4 max-[900px]:grid-cols-1"
     >
-      <section class="border-line bg-surface shadow-card overflow-hidden rounded-2xl border">
-        <header class="border-line flex items-center justify-between gap-3 px-5 py-4">
+      <section class="overflow-hidden rounded-2xl border border-line bg-surface shadow-card">
+        <header class="flex items-center justify-between gap-3 border-line px-5 py-4">
           <div class="min-w-0">
             <h2 class="truncate text-sm font-semibold">{{ imageName }}</h2>
-            <p class="text-ink-3 mt-0.5 text-[11px] tabular-nums">{{ imageSize }}</p>
+            <p class="mt-0.5 text-[11px] text-ink-3 tabular-nums">{{ imageSize }}</p>
           </div>
           <div class="flex shrink-0 items-center gap-1.5">
             <button
               type="button"
-              class="border-line bg-surface text-ink-2 hover:border-line-strong hover:text-brand inline-flex h-8 items-center gap-1.5 rounded-lg border px-2.5 text-[11.5px] font-medium transition-colors disabled:opacity-50"
+              class="inline-flex h-8 items-center gap-1.5 rounded-lg border border-line bg-surface px-2.5 text-[11.5px] font-medium text-ink-2 transition-colors hover:border-line-strong hover:text-brand disabled:opacity-50"
               :disabled="picking"
               @click="pick"
             >
@@ -356,7 +356,7 @@ function clearPicked(): void {
             </button>
             <button
               type="button"
-              class="text-ink-3 hover:bg-surface-3 hover:text-danger grid size-8 place-items-center rounded-lg transition-colors"
+              class="grid size-8 place-items-center rounded-lg text-ink-3 transition-colors hover:bg-surface-3 hover:text-danger"
               title="移除图片"
               @click="reset"
             >
@@ -366,7 +366,7 @@ function clearPicked(): void {
         </header>
 
         <div class="px-5 pt-4 pb-5">
-          <div class="border-line bg-surface-2 flex justify-center rounded-xl border p-2">
+          <div class="flex justify-center rounded-xl border border-line bg-surface-2 p-2">
             <div
               class="relative inline-block"
               @mousemove="onMove"
@@ -393,21 +393,21 @@ function clearPicked(): void {
               </div>
               <div
                 v-if="dragActive"
-                class="bg-surface/80 absolute inset-0 grid place-items-center rounded-lg backdrop-blur-sm"
+                class="absolute inset-0 grid place-items-center rounded-lg bg-surface/80 backdrop-blur-sm"
               >
                 <div class="text-center">
-                  <ImageDown :size="26" class="text-brand mx-auto mb-1.5" :stroke-width="1.7" />
-                  <p class="text-ink text-[12.5px] font-semibold">松开鼠标替换图片</p>
+                  <ImageDown :size="26" class="mx-auto mb-1.5 text-brand" :stroke-width="1.7" />
+                  <p class="text-[12.5px] font-semibold text-ink">松开鼠标替换图片</p>
                 </div>
               </div>
             </div>
           </div>
 
           <div class="mt-3 flex items-center justify-between gap-3">
-            <p class="text-ink-3 text-[11.5px]">悬停取色，点击复制；颜色会自动加入最近使用</p>
+            <p class="text-[11.5px] text-ink-3">悬停取色，点击复制；颜色会自动加入最近使用</p>
             <button
               type="button"
-              class="bg-brand-soft text-brand hover:bg-brand-soft-2 inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg px-3 text-[11.5px] font-semibold transition-colors disabled:opacity-40"
+              class="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg bg-brand-soft px-3 text-[11.5px] font-semibold text-brand transition-colors hover:bg-brand-soft-2 disabled:opacity-40"
               :disabled="!currentColor"
               @click="openInLab"
             >
@@ -419,10 +419,10 @@ function clearPicked(): void {
       </section>
 
       <div class="flex flex-col gap-4">
-        <section class="border-line bg-surface shadow-card overflow-hidden rounded-2xl border">
-          <header class="border-line flex items-center justify-between gap-3 border-b px-5 py-4">
+        <section class="overflow-hidden rounded-2xl border border-line bg-surface shadow-card">
+          <header class="flex items-center justify-between gap-3 border-b border-line px-5 py-4">
             <h2 class="text-sm font-semibold">图片主色</h2>
-            <span class="text-ink-3 text-[11px]">{{ palette.length }} 种</span>
+            <span class="text-[11px] text-ink-3">{{ palette.length }} 种</span>
           </header>
           <div class="grid grid-cols-4 gap-2 px-5 pt-4 pb-5">
             <button
@@ -444,13 +444,13 @@ function clearPicked(): void {
           </div>
         </section>
 
-        <section class="border-line bg-surface shadow-card overflow-hidden rounded-2xl border">
-          <header class="border-line flex items-center justify-between gap-3 border-b px-5 py-4">
+        <section class="overflow-hidden rounded-2xl border border-line bg-surface shadow-card">
+          <header class="flex items-center justify-between gap-3 border-b border-line px-5 py-4">
             <h2 class="text-sm font-semibold">已取色</h2>
             <button
               v-if="picked.length"
               type="button"
-              class="text-ink-3 hover:text-danger text-[11px] transition-colors"
+              class="text-[11px] text-ink-3 transition-colors hover:text-danger"
               @click="clearPicked"
             >
               清空
@@ -462,22 +462,22 @@ function clearPicked(): void {
                 v-for="color in picked"
                 :key="color"
                 type="button"
-                class="group hover:bg-surface-2 flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-left transition-colors"
+                class="group flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-surface-2"
                 :title="`复制 ${color}`"
                 @click="copyColor(color)"
               >
                 <span
-                  class="border-line size-6 shrink-0 rounded-md border"
+                  class="size-6 shrink-0 rounded-md border border-line"
                   :style="{ backgroundColor: color }"
                 />
                 <span class="font-mono text-[11.5px] font-medium">{{ color }}</span>
                 <Copy
                   :size="12"
-                  class="text-ink-3 group-hover:text-brand ml-auto shrink-0 opacity-0 transition-all group-hover:opacity-100"
+                  class="ml-auto shrink-0 text-ink-3 opacity-0 transition-all group-hover:text-brand group-hover:opacity-100"
                 />
               </button>
             </div>
-            <p v-else class="text-ink-3 text-[11.5px] leading-relaxed">
+            <p v-else class="text-[11.5px] leading-relaxed text-ink-3">
               在图片上点击取色，取到的颜色会记录在这里
             </p>
           </div>
@@ -488,16 +488,16 @@ function clearPicked(): void {
     <Teleport to="body">
       <div
         v-if="dragActive"
-        class="bg-page/85 pointer-events-none fixed inset-0 z-50 grid place-items-center p-6 backdrop-blur-sm"
+        class="pointer-events-none fixed inset-0 z-50 grid place-items-center bg-page/85 p-6 backdrop-blur-sm"
       >
         <div
-          class="border-brand bg-surface/95 flex w-full max-w-[560px] flex-col items-center rounded-3xl border-2 border-dashed px-6 py-14 text-center shadow-2xl"
+          class="flex w-full max-w-[560px] flex-col items-center rounded-3xl border-2 border-dashed border-brand bg-surface/95 px-6 py-14 text-center shadow-2xl"
         >
-          <div class="bg-brand-soft text-brand mb-4 grid size-16 place-items-center rounded-2xl">
+          <div class="mb-4 grid size-16 place-items-center rounded-2xl bg-brand-soft text-brand">
             <ImageDown :size="32" :stroke-width="1.7" />
           </div>
-          <p class="text-ink text-lg font-semibold">松开鼠标，载入图片</p>
-          <p class="text-ink-3 mt-1.5 text-[13px]">
+          <p class="text-lg font-semibold text-ink">松开鼠标，载入图片</p>
+          <p class="mt-1.5 text-[13px] text-ink-3">
             整个页面均可拖拽 · 支持 PNG / JPG / WebP / GIF / BMP
           </p>
         </div>

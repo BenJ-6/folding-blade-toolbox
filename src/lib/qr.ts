@@ -126,15 +126,7 @@ function drawFinder(
 ): void {
   const outer = style === "square" ? 0 : style === "dots" ? cell * 2.1 : cell * 1.3;
   fillRoundRect(ctx, x, y, cell * 7, cell * 7, outer, fg);
-  fillRoundRect(
-    ctx,
-    x + cell,
-    y + cell,
-    cell * 5,
-    cell * 5,
-    Math.max(0, outer - cell * 0.7),
-    bg,
-  );
+  fillRoundRect(ctx, x + cell, y + cell, cell * 5, cell * 5, Math.max(0, outer - cell * 0.7), bg);
   fillRoundRect(
     ctx,
     x + cell * 2,
@@ -204,15 +196,7 @@ export function drawQrCanvas(
         ctx.arc(px + cell / 2, py + cell / 2, cell * 0.48, 0, Math.PI * 2);
         ctx.fill();
       } else {
-        fillRoundRect(
-          ctx,
-          px,
-          py,
-          cell,
-          cell,
-          style.dotStyle === "rounded" ? cell * 0.34 : 0,
-          fg,
-        );
+        fillRoundRect(ctx, px, py, cell, cell, style.dotStyle === "rounded" ? cell * 0.34 : 0, fg);
       }
     }
   }
@@ -246,11 +230,7 @@ function svgRect(
   return `<rect x="${svgNumber(x)}" y="${svgNumber(y)}" width="${svgNumber(width)}" height="${svgNumber(height)}"${rx} fill="${fill}"/>`;
 }
 
-export function qrSvg(
-  text: string,
-  style: QrStyle,
-  logoDataUrl?: string | null,
-): string {
+export function qrSvg(text: string, style: QrStyle, logoDataUrl?: string | null): string {
   const geometry = buildQrGeometry(text, style);
   const { matrix, modules, margin, cell, canvasSize } = geometry;
   const fg = safeColor(style.fg, "#111827");
@@ -287,7 +267,9 @@ export function qrSvg(
         }
         const cx = offset + x * cell + cell / 2;
         const cy = offset + y * cell + cell / 2;
-        parts.push(`<circle cx="${svgNumber(cx)}" cy="${svgNumber(cy)}" r="${svgNumber(cell * 0.48)}" fill="${fg}"/>`);
+        parts.push(
+          `<circle cx="${svgNumber(cx)}" cy="${svgNumber(cy)}" r="${svgNumber(cell * 0.48)}" fill="${fg}"/>`,
+        );
       }
     }
   } else {
@@ -296,9 +278,7 @@ export function qrSvg(
         if (!matrix[y][x] || isFinderModule(x, y, modules)) {
           continue;
         }
-        parts.push(
-          svgRect(offset + x * cell, offset + y * cell, cell, cell, radius, fg),
-        );
+        parts.push(svgRect(offset + x * cell, offset + y * cell, cell, cell, radius, fg));
       }
     }
   }
@@ -313,14 +293,7 @@ export function qrSvg(
   for (const [fx, fy] of finders) {
     parts.push(svgRect(fx, fy, cell * 7, cell * 7, finderRadius, fg));
     parts.push(
-      svgRect(
-        fx + cell,
-        fy + cell,
-        cell * 5,
-        cell * 5,
-        Math.max(0, finderRadius - cell * 0.7),
-        bg,
-      ),
+      svgRect(fx + cell, fy + cell, cell * 5, cell * 5, Math.max(0, finderRadius - cell * 0.7), bg),
     );
     parts.push(
       svgRect(
@@ -389,9 +362,7 @@ export function contrastRatio(foreground: string, background: string): number {
 
 function relativeLuminance(hex: string): number {
   const normalized =
-    hex.length === 4
-      ? `#${hex[1]}${hex[1]}${hex[2]}${hex[2]}${hex[3]}${hex[3]}`
-      : hex;
+    hex.length === 4 ? `#${hex[1]}${hex[1]}${hex[2]}${hex[2]}${hex[3]}${hex[3]}` : hex;
   const channels = [1, 3, 5].map((start) => {
     const value = parseInt(normalized.slice(start, start + 2), 16) / 255;
     return value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;

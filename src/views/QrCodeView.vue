@@ -15,10 +15,13 @@ const tabs = [
 
 <template>
   <section class="mx-auto w-full max-w-[1180px]">
-    <PageHeader title="二维码" description="把链接、文字、Wi-Fi 变成二维码，也能从图片里读出二维码" />
+    <PageHeader
+      title="二维码"
+      description="把链接、文字、Wi-Fi 变成二维码，也能从图片里读出二维码"
+    />
 
     <div
-      class="border-line bg-surface shadow-card mb-4 inline-flex items-center gap-1 rounded-xl border p-1"
+      class="mb-4 inline-flex items-center gap-1 rounded-xl border border-line bg-surface p-1 shadow-card"
     >
       <button
         v-for="item in tabs"
@@ -27,8 +30,8 @@ const tabs = [
         class="inline-flex h-9 items-center gap-2 rounded-lg px-4 text-[13px] transition-colors"
         :class="
           tab === item.value
-            ? 'bg-brand-soft text-brand font-semibold'
-            : 'text-ink-2 hover:bg-surface-2 font-medium'
+            ? 'bg-brand-soft font-semibold text-brand'
+            : 'font-medium text-ink-2 hover:bg-surface-2'
         "
         @click="tab = item.value"
       >

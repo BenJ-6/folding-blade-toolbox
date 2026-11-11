@@ -366,17 +366,17 @@ async function copyContent(): Promise<void> {
 <template>
   <div class="grid grid-cols-[minmax(0,1fr)_336px] items-start gap-5 max-[980px]:grid-cols-1">
     <div class="flex min-w-0 flex-col gap-4">
-      <section class="border-line bg-surface shadow-card overflow-hidden rounded-2xl border">
-        <header class="border-line flex items-center justify-between gap-3 border-b px-5 py-4">
+      <section class="overflow-hidden rounded-2xl border border-line bg-surface shadow-card">
+        <header class="flex items-center justify-between gap-3 border-b border-line px-5 py-4">
           <h2 class="flex items-center gap-2 text-sm font-semibold">
             <Type :size="17" class="text-brand" />
             内容
           </h2>
-          <span class="text-ink-3 text-[11.5px]">扫码后看到的内容</span>
+          <span class="text-[11.5px] text-ink-3">扫码后看到的内容</span>
         </header>
 
         <div class="flex flex-col gap-3.5 px-5 pt-4 pb-5">
-          <div class="bg-surface-2 grid grid-cols-3 gap-1 rounded-[10px] p-1">
+          <div class="grid grid-cols-3 gap-1 rounded-[10px] bg-surface-2 p-1">
             <button
               v-for="option in contentKinds"
               :key="option.value"
@@ -384,8 +384,8 @@ async function copyContent(): Promise<void> {
               class="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg text-[12.5px] transition-colors"
               :class="
                 kind === option.value
-                  ? 'bg-surface text-brand shadow-card font-semibold'
-                  : 'text-ink-2 hover:text-ink font-medium'
+                  ? 'bg-surface font-semibold text-brand shadow-card'
+                  : 'font-medium text-ink-2 hover:text-ink'
               "
               @click="kind = option.value"
             >
@@ -398,14 +398,14 @@ async function copyContent(): Promise<void> {
             <textarea
               v-model="text"
               rows="4"
-              class="border-line bg-surface-2 focus:border-brand focus:bg-surface focus:shadow-[0_0_0_3px_var(--color-brand-soft)] w-full resize-none rounded-[9px] border px-3 py-2.5 text-[13px] leading-relaxed transition-colors outline-none"
+              class="w-full resize-none rounded-[9px] border border-line bg-surface-2 px-3 py-2.5 text-[13px] leading-relaxed transition-colors outline-none focus:border-brand focus:bg-surface focus:shadow-[0_0_0_3px_var(--color-brand-soft)]"
               placeholder="输入网址（如 https://example.com）或任意文字…"
             />
             <div class="flex items-center justify-between gap-3">
-              <p class="text-ink-3 text-[11.5px]">
+              <p class="text-[11.5px] text-ink-3">
                 {{ isUrlText ? "识别为链接，扫码后可直接打开" : "扫码后会显示这段文字" }}
               </p>
-              <span class="text-ink-3 shrink-0 text-[11.5px] tabular-nums">
+              <span class="shrink-0 text-[11.5px] text-ink-3 tabular-nums">
                 {{ text.length }} 字符
               </span>
             </div>
@@ -413,23 +413,25 @@ async function copyContent(): Promise<void> {
 
           <template v-else-if="kind === 'wifi'">
             <div class="flex flex-col gap-1.5">
-              <span class="text-ink-2 text-[12px] font-medium">网络名称（SSID）</span>
+              <span class="text-[12px] font-medium text-ink-2">网络名称（SSID）</span>
               <input v-model="wifi.ssid" type="text" class="field" placeholder="例如 Home-WiFi" />
             </div>
 
             <div class="flex flex-col gap-1.5">
-              <span class="text-ink-2 text-[12px] font-medium">密码</span>
+              <span class="text-[12px] font-medium text-ink-2">密码</span>
               <div class="relative">
                 <input
                   v-model="wifi.password"
                   :type="showPassword ? 'text' : 'password'"
                   class="field pr-9"
                   :disabled="wifi.encryption === 'nopass'"
-                  :placeholder="wifi.encryption === 'nopass' ? '无密码网络，无需填写' : 'Wi-Fi 密码'"
+                  :placeholder="
+                    wifi.encryption === 'nopass' ? '无密码网络，无需填写' : 'Wi-Fi 密码'
+                  "
                 />
                 <button
                   type="button"
-                  class="text-ink-3 hover:text-ink-2 absolute top-1/2 right-2 grid size-6 -translate-y-1/2 place-items-center rounded-md transition-colors"
+                  class="absolute top-1/2 right-2 grid size-6 -translate-y-1/2 place-items-center rounded-md text-ink-3 transition-colors hover:text-ink-2"
                   :title="showPassword ? '隐藏密码' : '显示密码'"
                   @click="showPassword = !showPassword"
                 >
@@ -446,7 +448,7 @@ async function copyContent(): Promise<void> {
             </div>
 
             <div class="flex flex-col gap-1.5">
-              <span class="text-ink-2 text-[12px] font-medium">加密方式</span>
+              <span class="text-[12px] font-medium text-ink-2">加密方式</span>
               <select v-model="wifi.encryption" class="field">
                 <option value="WPA">WPA / WPA2 / WPA3</option>
                 <option value="WEP">WEP</option>
@@ -455,11 +457,11 @@ async function copyContent(): Promise<void> {
             </div>
 
             <div
-              class="border-line bg-surface-2 flex items-center justify-between gap-3 rounded-[9px] border px-3 py-2"
+              class="flex items-center justify-between gap-3 rounded-[9px] border border-line bg-surface-2 px-3 py-2"
             >
               <div>
-                <p class="text-ink-2 text-[12px] font-medium">隐藏网络</p>
-                <p class="text-ink-3 text-[11px]">路由器不广播 SSID 时开启</p>
+                <p class="text-[12px] font-medium text-ink-2">隐藏网络</p>
+                <p class="text-[11px] text-ink-3">路由器不广播 SSID 时开启</p>
               </div>
               <button
                 type="button"
@@ -476,7 +478,7 @@ async function copyContent(): Promise<void> {
               </button>
             </div>
 
-            <p class="text-ink-3 text-[11.5px] leading-relaxed">
+            <p class="text-[11.5px] leading-relaxed text-ink-3">
               填入后，扫码会直接弹出加入网络提示；密码不会上传到任何服务器
             </p>
           </template>
@@ -484,42 +486,44 @@ async function copyContent(): Promise<void> {
           <template v-else>
             <div class="grid grid-cols-2 gap-2.5">
               <div class="col-span-2 flex flex-col gap-1.5">
-                <span class="text-ink-2 text-[12px] font-medium">姓名 <span class="text-danger">*</span></span>
+                <span class="text-[12px] font-medium text-ink-2"
+                  >姓名 <span class="text-danger">*</span></span
+                >
                 <input v-model="vcard.name" type="text" class="field" placeholder="例如 张三" />
               </div>
               <div class="flex flex-col gap-1.5">
-                <span class="text-ink-2 text-[12px] font-medium">电话</span>
+                <span class="text-[12px] font-medium text-ink-2">电话</span>
                 <input v-model="vcard.tel" type="text" class="field" placeholder="可选" />
               </div>
               <div class="flex flex-col gap-1.5">
-                <span class="text-ink-2 text-[12px] font-medium">公司</span>
+                <span class="text-[12px] font-medium text-ink-2">公司</span>
                 <input v-model="vcard.org" type="text" class="field" placeholder="可选" />
               </div>
               <div class="col-span-2 flex flex-col gap-1.5">
-                <span class="text-ink-2 text-[12px] font-medium">邮箱</span>
+                <span class="text-[12px] font-medium text-ink-2">邮箱</span>
                 <input v-model="vcard.email" type="text" class="field" placeholder="可选" />
               </div>
               <div class="col-span-2 flex flex-col gap-1.5">
-                <span class="text-ink-2 text-[12px] font-medium">网址</span>
+                <span class="text-[12px] font-medium text-ink-2">网址</span>
                 <input v-model="vcard.url" type="text" class="field" placeholder="可选" />
               </div>
             </div>
-            <p class="text-ink-3 text-[11.5px] leading-relaxed">
+            <p class="text-[11.5px] leading-relaxed text-ink-3">
               扫码后手机会提示保存联系人，姓名必填
             </p>
           </template>
         </div>
       </section>
 
-      <section class="border-line bg-surface shadow-card overflow-hidden rounded-2xl border">
-        <header class="border-line flex items-center justify-between gap-3 border-b px-5 py-4">
+      <section class="overflow-hidden rounded-2xl border border-line bg-surface shadow-card">
+        <header class="flex items-center justify-between gap-3 border-b border-line px-5 py-4">
           <h2 class="flex items-center gap-2 text-sm font-semibold">
             <Palette :size="17" class="text-brand" />
             外观设置
           </h2>
           <button
             type="button"
-            class="text-ink-3 hover:text-brand inline-flex items-center gap-1 text-xs transition-colors"
+            class="inline-flex items-center gap-1 text-xs text-ink-3 transition-colors hover:text-brand"
             @click="resetStyle"
           >
             <RotateCcw :size="12" />
@@ -529,7 +533,7 @@ async function copyContent(): Promise<void> {
 
         <div class="flex flex-col gap-5 px-5 pt-4 pb-5">
           <div class="flex flex-col gap-2">
-            <p class="text-ink-2 text-[12.5px] font-semibold">码点样式</p>
+            <p class="text-[12.5px] font-semibold text-ink-2">码点样式</p>
             <div class="grid grid-cols-3 gap-1.5">
               <button
                 v-for="option in dotStyles"
@@ -538,7 +542,7 @@ async function copyContent(): Promise<void> {
                 class="h-8 rounded-lg border text-[11.5px] font-medium transition-colors"
                 :class="
                   style.dotStyle === option.value
-                    ? 'border-brand bg-brand-soft text-brand font-semibold'
+                    ? 'border-brand bg-brand-soft font-semibold text-brand'
                     : 'border-line bg-surface text-ink-2 hover:border-line-strong'
                 "
                 @click="style.dotStyle = option.value"
@@ -550,10 +554,10 @@ async function copyContent(): Promise<void> {
 
           <div class="flex flex-col gap-2">
             <div class="flex items-center justify-between">
-              <p class="text-ink-2 text-[12.5px] font-semibold">颜色</p>
+              <p class="text-[12.5px] font-semibold text-ink-2">颜色</p>
               <button
                 type="button"
-                class="text-ink-3 hover:text-brand inline-flex items-center gap-1 text-[11.5px] transition-colors"
+                class="inline-flex items-center gap-1 text-[11.5px] text-ink-3 transition-colors hover:text-brand"
                 title="交换前景与背景色"
                 @click="swapColors"
               >
@@ -564,41 +568,41 @@ async function copyContent(): Promise<void> {
 
             <div class="grid grid-cols-2 gap-2">
               <div
-                class="border-line bg-surface-2 flex items-center gap-2 rounded-[9px] border px-2 py-1.5"
+                class="flex items-center gap-2 rounded-[9px] border border-line bg-surface-2 px-2 py-1.5"
               >
                 <input
                   v-model="style.fg"
                   type="color"
-                  class="border-line size-6 shrink-0 cursor-pointer rounded border bg-transparent p-0"
+                  class="size-6 shrink-0 cursor-pointer rounded border border-line bg-transparent p-0"
                   aria-label="前景色"
                   @blur="normalizeColor('fg')"
                 />
                 <div class="min-w-0 flex-1">
-                  <p class="text-ink-3 text-[10.5px]">前景</p>
+                  <p class="text-[10.5px] text-ink-3">前景</p>
                   <input
                     v-model="style.fg"
                     type="text"
-                    class="text-ink w-full bg-transparent text-[11.5px] font-medium uppercase outline-none"
+                    class="w-full bg-transparent text-[11.5px] font-medium text-ink uppercase outline-none"
                     @blur="normalizeColor('fg')"
                   />
                 </div>
               </div>
               <div
-                class="border-line bg-surface-2 flex items-center gap-2 rounded-[9px] border px-2 py-1.5"
+                class="flex items-center gap-2 rounded-[9px] border border-line bg-surface-2 px-2 py-1.5"
               >
                 <input
                   v-model="style.bg"
                   type="color"
-                  class="border-line size-6 shrink-0 cursor-pointer rounded border bg-transparent p-0"
+                  class="size-6 shrink-0 cursor-pointer rounded border border-line bg-transparent p-0"
                   aria-label="背景色"
                   @blur="normalizeColor('bg')"
                 />
                 <div class="min-w-0 flex-1">
-                  <p class="text-ink-3 text-[10.5px]">背景</p>
+                  <p class="text-[10.5px] text-ink-3">背景</p>
                   <input
                     v-model="style.bg"
                     type="text"
-                    class="text-ink w-full bg-transparent text-[11.5px] font-medium uppercase outline-none"
+                    class="w-full bg-transparent text-[11.5px] font-medium text-ink uppercase outline-none"
                     @blur="normalizeColor('bg')"
                   />
                 </div>
@@ -621,8 +625,8 @@ async function copyContent(): Promise<void> {
 
           <div class="flex flex-col gap-2">
             <div class="flex items-center justify-between">
-              <p class="text-ink-2 text-[12.5px] font-semibold">纠错等级</p>
-              <span v-if="logoImage" class="text-brand text-[11px] font-medium">
+              <p class="text-[12.5px] font-semibold text-ink-2">纠错等级</p>
+              <span v-if="logoImage" class="text-[11px] font-medium text-brand">
                 已自动使用 H
               </span>
             </div>
@@ -644,15 +648,17 @@ async function copyContent(): Promise<void> {
                 <span class="text-[10px] opacity-70">容错 {{ option.desc }}</span>
               </button>
             </div>
-            <p class="text-ink-3 text-[11px] leading-relaxed">
+            <p class="text-[11px] leading-relaxed text-ink-3">
               等级越高越耐污损和遮挡，可容纳的内容也越少
             </p>
           </div>
 
           <div class="flex flex-col gap-2">
             <div class="flex items-center justify-between">
-              <p class="text-ink-2 text-[12.5px] font-semibold">四周留白</p>
-              <span class="bg-brand-soft text-brand rounded-md px-2 py-0.5 text-[11.5px] font-semibold">
+              <p class="text-[12.5px] font-semibold text-ink-2">四周留白</p>
+              <span
+                class="rounded-md bg-brand-soft px-2 py-0.5 text-[11.5px] font-semibold text-brand"
+              >
                 {{ style.margin }} 格
               </span>
             </div>
@@ -671,13 +677,13 @@ async function copyContent(): Promise<void> {
             >
               留白太少，部分扫码工具可能无法识别，建议 2 格以上
             </p>
-            <p v-else class="text-ink-3 text-[11px]">留白指二维码四周的空白边距</p>
+            <p v-else class="text-[11px] text-ink-3">留白指二维码四周的空白边距</p>
           </div>
 
           <div class="flex flex-col gap-2">
             <div class="flex items-center justify-between">
-              <p class="text-ink-2 text-[12.5px] font-semibold">中心 Logo</p>
-              <span class="text-ink-3 text-[11px]">可选</span>
+              <p class="text-[12.5px] font-semibold text-ink-2">中心 Logo</p>
+              <span class="text-[11px] text-ink-3">可选</span>
             </div>
             <input
               ref="logoInput"
@@ -689,7 +695,7 @@ async function copyContent(): Promise<void> {
             <div class="flex items-center gap-2">
               <button
                 type="button"
-                class="border-line-strong bg-surface-2 text-ink-2 hover:border-brand hover:text-brand inline-flex h-9 items-center gap-1.5 rounded-[9px] border border-dashed px-3 text-[12px] font-medium transition-colors"
+                class="inline-flex h-9 items-center gap-1.5 rounded-[9px] border border-dashed border-line-strong bg-surface-2 px-3 text-[12px] font-medium text-ink-2 transition-colors hover:border-brand hover:text-brand"
                 @click="pickLogo"
               >
                 <ImagePlus :size="15" />
@@ -699,11 +705,11 @@ async function copyContent(): Promise<void> {
                 <img
                   :src="logoDataUrl"
                   alt="Logo 预览"
-                  class="border-line size-9 rounded-md border bg-white object-contain p-0.5"
+                  class="size-9 rounded-md border border-line bg-white object-contain p-0.5"
                 />
                 <button
                   type="button"
-                  class="text-ink-3 hover:bg-surface-3 hover:text-danger grid size-8 place-items-center rounded-lg transition-colors"
+                  class="grid size-8 place-items-center rounded-lg text-ink-3 transition-colors hover:bg-surface-3 hover:text-danger"
                   title="移除 Logo"
                   @click="removeLogo"
                 >
@@ -711,7 +717,7 @@ async function copyContent(): Promise<void> {
                 </button>
               </template>
             </div>
-            <p class="text-ink-3 text-[11px] leading-relaxed">
+            <p class="text-[11px] leading-relaxed text-ink-3">
               建议使用正方形、背景简单的图片，添加后自动提升到最高纠错等级
             </p>
           </div>
@@ -720,23 +726,23 @@ async function copyContent(): Promise<void> {
     </div>
 
     <aside
-      class="border-line bg-surface shadow-card sticky top-5 overflow-hidden rounded-2xl border max-[980px]:static max-[980px]:order-first"
+      class="sticky top-5 overflow-hidden rounded-2xl border border-line bg-surface shadow-card max-[980px]:static max-[980px]:order-first"
     >
-      <header class="border-line flex items-center justify-between border-b px-5 py-4">
+      <header class="flex items-center justify-between border-b border-line px-5 py-4">
         <h2 class="flex items-center gap-2 text-sm font-semibold">
           <QrCode :size="17" class="text-brand" />
           预览
         </h2>
         <span
           v-if="canExport"
-          class="bg-brand-soft text-brand rounded-md px-2 py-0.5 text-[11px] font-semibold tabular-nums"
+          class="rounded-md bg-brand-soft px-2 py-0.5 text-[11px] font-semibold text-brand tabular-nums"
         >
           {{ actualSize }} px
         </span>
       </header>
 
       <div class="flex flex-col gap-4 px-5 pt-4 pb-5">
-        <div class="border-line relative overflow-hidden rounded-xl border bg-white p-3">
+        <div class="relative overflow-hidden rounded-xl border border-line bg-white p-3">
           <canvas
             ref="canvasRef"
             width="1024"
@@ -746,35 +752,35 @@ async function copyContent(): Promise<void> {
           />
           <div
             v-if="!payload"
-            class="border-line-strong bg-surface-2/70 absolute inset-3 grid place-items-center rounded-lg border border-dashed text-center"
+            class="absolute inset-3 grid place-items-center rounded-lg border border-dashed border-line-strong bg-surface-2/70 text-center"
           >
             <div class="px-4">
-              <QrCode :size="30" class="text-ink-3 mx-auto mb-2" :stroke-width="1.6" />
-              <p class="text-ink-2 text-[12.5px] font-medium">等待内容</p>
-              <p class="text-ink-3 mt-0.5 text-[11.5px]">在左侧输入后自动生成</p>
+              <QrCode :size="30" class="mx-auto mb-2 text-ink-3" :stroke-width="1.6" />
+              <p class="text-[12.5px] font-medium text-ink-2">等待内容</p>
+              <p class="mt-0.5 text-[11.5px] text-ink-3">在左侧输入后自动生成</p>
             </div>
           </div>
           <div
             v-else-if="previewError"
-            class="bg-surface-2/95 absolute inset-3 grid place-items-center rounded-lg text-center"
+            class="absolute inset-3 grid place-items-center rounded-lg bg-surface-2/95 text-center"
           >
             <div class="px-4">
-              <TriangleAlert :size="28" class="text-danger mx-auto mb-2" :stroke-width="1.7" />
-              <p class="text-danger text-[12px] leading-relaxed font-medium">
+              <TriangleAlert :size="28" class="mx-auto mb-2 text-danger" :stroke-width="1.7" />
+              <p class="text-[12px] leading-relaxed font-medium text-danger">
                 {{ previewError }}
               </p>
             </div>
           </div>
         </div>
 
-        <p v-if="canExport" class="text-ink-3 -mt-1 text-center text-[11.5px]">
+        <p v-if="canExport" class="-mt-1 text-center text-[11.5px] text-ink-3">
           {{ contentHint }}
         </p>
 
         <div v-if="canExport" class="flex flex-col gap-2">
           <div class="flex items-center justify-between">
-            <p class="text-ink-2 text-[12.5px] font-semibold">导出尺寸</p>
-            <span class="text-ink-3 text-[11.5px]">PNG / SVG</span>
+            <p class="text-[12.5px] font-semibold text-ink-2">导出尺寸</p>
+            <span class="text-[11.5px] text-ink-3">PNG / SVG</span>
           </div>
           <div class="grid grid-cols-4 gap-1.5">
             <button
@@ -784,7 +790,7 @@ async function copyContent(): Promise<void> {
               class="h-8 rounded-lg border text-[11.5px] font-medium transition-colors"
               :class="
                 exportSize === size
-                  ? 'border-brand bg-brand-soft text-brand font-semibold'
+                  ? 'border-brand bg-brand-soft font-semibold text-brand'
                   : 'border-line bg-surface text-ink-2 hover:border-line-strong'
               "
               @click="exportSize = size"
@@ -797,7 +803,7 @@ async function copyContent(): Promise<void> {
         <div class="flex flex-col gap-2">
           <button
             type="button"
-            class="bg-brand-gradient inline-flex h-[42px] w-full items-center justify-center gap-2 rounded-[10px] text-[13.5px] font-semibold text-white transition-all hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50"
+            class="inline-flex h-[42px] w-full items-center justify-center gap-2 rounded-[10px] bg-brand-gradient text-[13.5px] font-semibold text-white transition-all hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50"
             :disabled="!canExport"
             @click="downloadPng"
           >
@@ -807,7 +813,7 @@ async function copyContent(): Promise<void> {
           <div class="grid grid-cols-2 gap-2">
             <button
               type="button"
-              class="border-line bg-surface text-ink-2 hover:border-line-strong hover:text-ink inline-flex h-9 items-center justify-center gap-1.5 rounded-[9px] border text-[12.5px] font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+              class="inline-flex h-9 items-center justify-center gap-1.5 rounded-[9px] border border-line bg-surface text-[12.5px] font-medium text-ink-2 transition-colors hover:border-line-strong hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
               :disabled="!canExport"
               @click="copyImage"
             >
@@ -816,7 +822,7 @@ async function copyContent(): Promise<void> {
             </button>
             <button
               type="button"
-              class="border-line bg-surface text-ink-2 hover:border-line-strong hover:text-ink inline-flex h-9 items-center justify-center gap-1.5 rounded-[9px] border text-[12.5px] font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+              class="inline-flex h-9 items-center justify-center gap-1.5 rounded-[9px] border border-line bg-surface text-[12.5px] font-medium text-ink-2 transition-colors hover:border-line-strong hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
               :disabled="!canExport"
               @click="downloadSvg"
             >
@@ -826,7 +832,7 @@ async function copyContent(): Promise<void> {
           </div>
           <button
             type="button"
-            class="text-ink-3 hover:text-brand inline-flex h-7 items-center justify-center gap-1 text-[11.5px] transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+            class="inline-flex h-7 items-center justify-center gap-1 text-[11.5px] text-ink-3 transition-colors hover:text-brand disabled:cursor-not-allowed disabled:opacity-40"
             :disabled="!canExport"
             @click="copyContent"
           >
@@ -842,7 +848,7 @@ async function copyContent(): Promise<void> {
           前景与背景对比度偏低，部分手机可能扫不出来，建议使用深色前景和浅色背景
         </p>
 
-        <p v-if="canExport" class="text-ink-3 text-center text-[11px]">
+        <p v-if="canExport" class="text-center text-[11px] text-ink-3">
           版本 {{ qrVersion }} · {{ moduleCount }}×{{ moduleCount }} 模块
         </p>
       </div>
@@ -860,7 +866,7 @@ async function copyContent(): Promise<void> {
     >
       <div
         v-if="notice"
-        class="bg-ink pointer-events-none fixed bottom-8 left-1/2 z-50 -translate-x-1/2 rounded-full px-4 py-2 text-[12.5px] font-medium text-white shadow-lg"
+        class="pointer-events-none fixed bottom-8 left-1/2 z-50 -translate-x-1/2 rounded-full bg-ink px-4 py-2 text-[12.5px] font-medium text-white shadow-lg"
       >
         {{ notice }}
       </div>

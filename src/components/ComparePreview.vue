@@ -114,19 +114,19 @@ async function download(): Promise<void> {
 <template>
   <section
     v-if="item && result"
-    class="border-line bg-surface shadow-card overflow-hidden rounded-2xl border"
+    class="overflow-hidden rounded-2xl border border-line bg-surface shadow-card"
   >
     <header
-      class="border-line flex flex-wrap items-start justify-between gap-3 border-b px-4 py-3.5"
+      class="flex flex-wrap items-start justify-between gap-3 border-b border-line px-4 py-3.5"
     >
       <div>
         <p class="text-sm font-semibold">效果预览</p>
-        <p class="text-ink-3 mt-0.5 text-xs">{{ item.name }}</p>
+        <p class="mt-0.5 text-xs text-ink-3">{{ item.name }}</p>
       </div>
       <div class="flex flex-wrap items-center justify-end gap-2">
         <button
           type="button"
-          class="border-line bg-surface-2 text-ink-2 hover:border-line-strong inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11.5px] transition-colors"
+          class="inline-flex items-center gap-1 rounded-full border border-line bg-surface-2 px-2.5 py-1 text-[11.5px] text-ink-2 transition-colors hover:border-line-strong"
           @click="actualSize = !actualSize"
         >
           <Minimize2 v-if="actualSize" :size="13" />
@@ -137,14 +137,14 @@ async function download(): Promise<void> {
           class="rounded-full border px-2.5 py-1 text-[11.5px]"
           :class="
             metric === 'dimension'
-              ? 'border-brand-soft-2 bg-brand-soft text-brand font-semibold'
+              ? 'border-brand-soft-2 bg-brand-soft font-semibold text-brand'
               : 'border-line bg-surface-2 text-ink-2'
           "
         >
           {{ item.width }}×{{ item.height }} → {{ result.width }}×{{ result.height }}
         </span>
         <span
-          class="border-line bg-surface-2 text-ink-2 rounded-full border px-2.5 py-1 text-[11.5px]"
+          class="rounded-full border border-line bg-surface-2 px-2.5 py-1 text-[11.5px] text-ink-2"
         >
           {{ formatBytes(item.size) }} → {{ formatBytes(result.size) }}
         </span>
@@ -155,7 +155,7 @@ async function download(): Promise<void> {
     </header>
 
     <div
-      class="border-line bg-surface-2 relative mx-4 mt-4 h-[300px] cursor-ew-resize touch-none rounded-xl border select-none"
+      class="relative mx-4 mt-4 h-[300px] cursor-ew-resize touch-none rounded-xl border border-line bg-surface-2 select-none"
       :class="actualSize ? 'overflow-auto' : 'overflow-hidden'"
       :style="viewportStyle"
       @pointerdown="onPointerDown"
@@ -206,14 +206,14 @@ async function download(): Promise<void> {
     </div>
 
     <footer class="flex items-center justify-between gap-3 px-4 py-4">
-      <span class="text-ink-3 text-xs">
+      <span class="text-xs text-ink-3">
         {{
           actualSize ? "按实际像素显示，可滚动查看细节" : "拖动滑块对比处理前后，或切换实际像素查看"
         }}
       </span>
       <button
         type="button"
-        class="bg-brand-soft text-brand hover:bg-brand-soft-2 inline-flex h-[30px] items-center gap-1 rounded-lg px-2.5 text-[12.5px] font-medium transition-colors"
+        class="inline-flex h-[30px] items-center gap-1 rounded-lg bg-brand-soft px-2.5 text-[12.5px] font-medium text-brand transition-colors hover:bg-brand-soft-2"
         @click="download"
       >
         <Download :size="14" />

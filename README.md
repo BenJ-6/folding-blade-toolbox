@@ -19,13 +19,13 @@
 
 ## 技术栈
 
-| 层 | 技术 |
-| --- | --- |
-| 桌面框架 | Tauri 2 |
-| 前端 | Vue 3、TypeScript、Vue Router、Tailwind CSS 4、Vite |
+| 层       | 技术                                                                           |
+| -------- | ------------------------------------------------------------------------------ |
+| 桌面框架 | Tauri 2                                                                        |
+| 前端     | Vue 3、TypeScript、Vue Router、Tailwind CSS 4、Vite                            |
 | 图片处理 | Rust：`image`、`imagequant`、`oxipng`、`jpeg-encoder`、`resvg`、`kamadak-exif` |
-| 二维码 | `uqr`（生成）、`jsqr`（识别） |
-| 包管理 | Bun |
+| 二维码   | `uqr`（生成）、`jsqr`（识别）                                                  |
+| 包管理   | Bun                                                                            |
 
 ## 环境要求
 
@@ -54,16 +54,16 @@ bun run dev
 
 ## 常用脚本
 
-| 命令 | 说明 |
-| --- | --- |
-| `bun run dev` | 启动 Vite 开发服务器 |
-| `bun tauri dev` | 启动 Tauri 桌面应用开发模式 |
-| `bun run build` | 类型检查并构建前端产物到 `dist/` |
-| `bun tauri build` | 构建各平台安装包 |
-| `bun run preview` | 预览前端构建产物 |
-| `bun run typecheck` | 运行 `vue-tsc` 类型检查 |
-| `bun run lint` | 运行 ESLint |
-| `bun run format` | 使用 Prettier 格式化代码 |
+| 命令                | 说明                             |
+| ------------------- | -------------------------------- |
+| `bun run dev`       | 启动 Vite 开发服务器             |
+| `bun tauri dev`     | 启动 Tauri 桌面应用开发模式      |
+| `bun run build`     | 类型检查并构建前端产物到 `dist/` |
+| `bun tauri build`   | 构建各平台安装包                 |
+| `bun run preview`   | 预览前端构建产物                 |
+| `bun run typecheck` | 运行 `vue-tsc` 类型检查          |
+| `bun run lint`      | 运行 oxlint 检查并自动修复       |
+| `bun run format`    | 使用 oxfmt 格式化代码            |
 
 ## 构建安装包
 

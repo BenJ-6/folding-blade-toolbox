@@ -82,11 +82,11 @@ function changeClass(item: ImageItem): string {
 </script>
 
 <template>
-  <section class="border-line bg-surface shadow-card overflow-hidden rounded-2xl border">
-    <header class="border-line flex items-center justify-between gap-3 border-b px-4 py-3.5">
+  <section class="overflow-hidden rounded-2xl border border-line bg-surface shadow-card">
+    <header class="flex items-center justify-between gap-3 border-b border-line px-4 py-3.5">
       <div>
         <p class="text-sm font-semibold">图片列表</p>
-        <p class="text-ink-3 mt-0.5 text-xs">
+        <p class="mt-0.5 text-xs text-ink-3">
           共 {{ items.length }} 张 · {{ formatBytes(totalSize) }}
           <template v-if="doneItems.length"> · 点击图片查看效果预览</template>
           <template v-if="stale && !busy">
@@ -98,7 +98,7 @@ function changeClass(item: ImageItem): string {
         <button
           v-if="doneItems.length"
           type="button"
-          class="bg-brand-soft text-brand hover:bg-brand-soft-2 inline-flex h-[30px] items-center gap-1 rounded-lg px-2.5 text-[12.5px] font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+          class="inline-flex h-[30px] items-center gap-1 rounded-lg bg-brand-soft px-2.5 text-[12.5px] font-medium text-brand transition-colors hover:bg-brand-soft-2 disabled:cursor-not-allowed disabled:opacity-40"
           :disabled="stale || busy"
           :title="stale ? '设置已更改，请重新处理' : undefined"
           @click="emit('downloadAll')"
@@ -108,7 +108,7 @@ function changeClass(item: ImageItem): string {
         </button>
         <button
           type="button"
-          class="border-line bg-surface text-ink-2 hover:border-line-strong hover:text-ink inline-flex h-[30px] items-center gap-1 rounded-lg border px-2.5 text-[12.5px] font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+          class="inline-flex h-[30px] items-center gap-1 rounded-lg border border-line bg-surface px-2.5 text-[12.5px] font-medium text-ink-2 transition-colors hover:border-line-strong hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
           :disabled="busy"
           @click="emit('add')"
         >
@@ -117,7 +117,7 @@ function changeClass(item: ImageItem): string {
         </button>
         <button
           type="button"
-          class="text-ink-3 hover:bg-surface-2 hover:text-ink-2 inline-flex h-[30px] items-center rounded-lg border border-transparent px-2.5 text-[12.5px] font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+          class="inline-flex h-[30px] items-center rounded-lg border border-transparent px-2.5 text-[12.5px] font-medium text-ink-3 transition-colors hover:bg-surface-2 hover:text-ink-2 disabled:cursor-not-allowed disabled:opacity-40"
           :disabled="busy"
           @click="emit('clear')"
         >
@@ -134,20 +134,20 @@ function changeClass(item: ImageItem): string {
         :class="
           item.id === selectedId
             ? 'border-brand-soft-2 bg-brand-soft'
-            : 'hover:bg-surface-2 border-transparent'
+            : 'border-transparent hover:bg-surface-2'
         "
         @click="emit('select', item.id)"
       >
         <div
-          class="border-line/60 bg-surface-3 grid size-11 shrink-0 place-items-center overflow-hidden rounded-[9px] border"
+          class="grid size-11 shrink-0 place-items-center overflow-hidden rounded-[9px] border border-line/60 bg-surface-3"
         >
           <img v-if="item.url" :src="item.url" alt="" class="size-full object-cover" />
-          <LoaderCircle v-else-if="!item.error" :size="18" class="text-ink-3 animate-spin" />
+          <LoaderCircle v-else-if="!item.error" :size="18" class="animate-spin text-ink-3" />
           <X v-else :size="16" class="text-danger" />
         </div>
 
         <div class="min-w-0 flex-1">
-          <p class="text-ink truncate text-[13px] font-medium">{{ item.name }}</p>
+          <p class="truncate text-[13px] font-medium text-ink">{{ item.name }}</p>
           <p
             class="mt-0.5 flex flex-wrap items-center gap-1 text-[11.5px]"
             :class="item.error ? 'text-danger' : 'text-ink-3'"
@@ -163,7 +163,7 @@ function changeClass(item: ImageItem): string {
                 <span
                   :class="
                     metric === 'dimension'
-                      ? 'bg-brand-soft text-brand rounded-md px-1.5 py-0.5 font-semibold tabular-nums'
+                      ? 'rounded-md bg-brand-soft px-1.5 py-0.5 font-semibold text-brand tabular-nums'
                       : 'text-ink-2'
                   "
                 >
@@ -173,7 +173,7 @@ function changeClass(item: ImageItem): string {
                 <span
                   :class="
                     metric === 'size'
-                      ? 'bg-brand-soft text-brand rounded-md px-1.5 py-0.5 font-semibold'
+                      ? 'rounded-md bg-brand-soft px-1.5 py-0.5 font-semibold text-brand'
                       : 'text-ink-2'
                   "
                 >
@@ -183,7 +183,7 @@ function changeClass(item: ImageItem): string {
               <template v-else-if="previewTargets[item.id]">
                 <span>→</span>
                 <span
-                  class="bg-brand-soft text-brand border-brand-soft-2 rounded-md border border-dashed px-1.5 py-0.5 font-semibold tabular-nums"
+                  class="rounded-md border border-dashed border-brand-soft-2 bg-brand-soft px-1.5 py-0.5 font-semibold text-brand tabular-nums"
                   title="预计输出尺寸"
                 >
                   {{ previewTargets[item.id]?.width }}×{{ previewTargets[item.id]?.height }}
@@ -196,7 +196,7 @@ function changeClass(item: ImageItem): string {
         <LoaderCircle
           v-if="item.status === 'processing'"
           :size="16"
-          class="text-brand shrink-0 animate-spin"
+          class="shrink-0 animate-spin text-brand"
         />
         <span
           v-else-if="item.result"
@@ -211,7 +211,7 @@ function changeClass(item: ImageItem): string {
           <button
             v-if="item.result"
             type="button"
-            class="text-ink-3 hover:bg-surface-3 hover:text-ink-2 grid size-8 place-items-center rounded-lg transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+            class="grid size-8 place-items-center rounded-lg text-ink-3 transition-colors hover:bg-surface-3 hover:text-ink-2 disabled:cursor-not-allowed disabled:opacity-40"
             title="下载"
             :disabled="stale || busy"
             @click.stop="emit('download', item.id)"
@@ -220,7 +220,7 @@ function changeClass(item: ImageItem): string {
           </button>
           <button
             type="button"
-            class="text-ink-3 hover:bg-surface-3 hover:text-ink-2 grid size-8 place-items-center rounded-lg transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+            class="grid size-8 place-items-center rounded-lg text-ink-3 transition-colors hover:bg-surface-3 hover:text-ink-2 disabled:cursor-not-allowed disabled:opacity-40"
             title="移除"
             :disabled="busy"
             @click.stop="emit('remove', item.id)"

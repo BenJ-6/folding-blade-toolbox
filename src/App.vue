@@ -3,7 +3,7 @@ import AppSidebar from "@/components/AppSidebar.vue";
 </script>
 
 <template>
-  <div class="bg-page flex min-h-screen">
+  <div class="flex min-h-screen bg-page">
     <AppSidebar />
     <main class="min-w-0 flex-1 px-7 pt-6 pb-10">
       <RouterView />

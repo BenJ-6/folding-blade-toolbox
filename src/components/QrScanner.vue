@@ -272,15 +272,15 @@ onUnmounted(() => {
 <template>
   <div class="grid grid-cols-[minmax(0,1fr)_336px] items-start gap-5 max-[980px]:grid-cols-1">
     <div class="flex min-w-0 flex-col gap-4">
-      <section class="border-line bg-surface shadow-card overflow-hidden rounded-2xl border">
-        <header class="border-line flex items-center justify-between gap-3 border-b px-5 py-4">
+      <section class="overflow-hidden rounded-2xl border border-line bg-surface shadow-card">
+        <header class="flex items-center justify-between gap-3 border-b border-line px-5 py-4">
           <h2 class="flex items-center gap-2 text-sm font-semibold">
             <ScanLine :size="17" class="text-brand" />
             识别二维码
           </h2>
           <span
             v-if="state === 'success'"
-            class="bg-success-soft text-success rounded-md px-2 py-0.5 text-[11px] font-semibold"
+            class="rounded-md bg-success-soft px-2 py-0.5 text-[11px] font-semibold text-success"
           >
             已识别
           </span>
@@ -301,22 +301,28 @@ onUnmounted(() => {
             @keydown.enter.prevent="pick"
           >
             <div
-              class="bg-brand-soft text-brand mx-auto mb-3.5 grid size-12 place-items-center rounded-[14px]"
+              class="mx-auto mb-3.5 grid size-12 place-items-center rounded-[14px] bg-brand-soft text-brand"
             >
               <ScanLine :size="24" :stroke-width="1.7" />
             </div>
-            <p class="text-ink text-[15px] font-semibold">拖拽二维码图片到这里</p>
-            <p class="text-ink-3 mt-1 text-[12.5px]">
+            <p class="text-[15px] font-semibold text-ink">拖拽二维码图片到这里</p>
+            <p class="mt-1 text-[12.5px] text-ink-3">
               也可以点击选择图片，或按
-              <kbd class="border-line bg-surface-2 text-ink-2 rounded border px-1.5 py-0.5 text-[10.5px] font-semibold">Ctrl</kbd>
+              <kbd
+                class="rounded border border-line bg-surface-2 px-1.5 py-0.5 text-[10.5px] font-semibold text-ink-2"
+                >Ctrl</kbd
+              >
               +
-              <kbd class="border-line bg-surface-2 text-ink-2 rounded border px-1.5 py-0.5 text-[10.5px] font-semibold">V</kbd>
+              <kbd
+                class="rounded border border-line bg-surface-2 px-1.5 py-0.5 text-[10.5px] font-semibold text-ink-2"
+                >V</kbd
+              >
               粘贴截图
             </p>
             <div class="mt-4 flex items-center justify-center gap-2">
               <button
                 type="button"
-                class="bg-brand-gradient inline-flex h-9 items-center gap-1.5 rounded-[10px] px-4 text-[12.5px] font-semibold text-white shadow-[0_10px_20px_-12px_rgba(99,102,241,0.8)]"
+                class="inline-flex h-9 items-center gap-1.5 rounded-[10px] bg-brand-gradient px-4 text-[12.5px] font-semibold text-white shadow-[0_10px_20px_-12px_rgba(99,102,241,0.8)]"
                 @click.stop="pick"
               >
                 <ImageUp :size="15" />
@@ -324,7 +330,7 @@ onUnmounted(() => {
               </button>
               <button
                 type="button"
-                class="border-line bg-surface text-ink-2 hover:border-line-strong hover:text-ink inline-flex h-9 items-center gap-1.5 rounded-[10px] border px-4 text-[12.5px] font-medium transition-colors"
+                class="inline-flex h-9 items-center gap-1.5 rounded-[10px] border border-line bg-surface px-4 text-[12.5px] font-medium text-ink-2 transition-colors hover:border-line-strong hover:text-ink"
                 @click.stop="pasteFromClipboard"
               >
                 <ClipboardPaste :size="15" />
@@ -336,7 +342,7 @@ onUnmounted(() => {
           <template v-else>
             <div class="flex items-center gap-3">
               <div
-                class="border-line bg-surface-2 relative grid size-24 shrink-0 place-items-center overflow-hidden rounded-xl border"
+                class="relative grid size-24 shrink-0 place-items-center overflow-hidden rounded-xl border border-line bg-surface-2"
               >
                 <img
                   v-if="previewUrl"
@@ -346,18 +352,18 @@ onUnmounted(() => {
                 />
                 <div
                   v-if="state === 'working'"
-                  class="bg-surface/70 absolute inset-0 grid place-items-center"
+                  class="absolute inset-0 grid place-items-center bg-surface/70"
                 >
-                  <LoaderCircle :size="22" class="text-brand animate-spin" />
+                  <LoaderCircle :size="22" class="animate-spin text-brand" />
                 </div>
               </div>
               <div class="min-w-0 flex-1">
-                <p class="text-ink truncate text-[13px] font-medium">{{ fileName }}</p>
-                <p class="text-ink-3 mt-0.5 text-[11.5px]">{{ stateText }}</p>
+                <p class="truncate text-[13px] font-medium text-ink">{{ fileName }}</p>
+                <p class="mt-0.5 text-[11.5px] text-ink-3">{{ stateText }}</p>
               </div>
               <button
                 type="button"
-                class="border-line bg-surface text-ink-2 hover:border-line-strong hover:text-ink inline-flex h-8 shrink-0 items-center gap-1 rounded-lg border px-2.5 text-[12px] font-medium transition-colors disabled:opacity-50"
+                class="inline-flex h-8 shrink-0 items-center gap-1 rounded-lg border border-line bg-surface px-2.5 text-[12px] font-medium text-ink-2 transition-colors hover:border-line-strong hover:text-ink disabled:opacity-50"
                 :disabled="busy"
                 @click="pick"
               >
@@ -366,7 +372,7 @@ onUnmounted(() => {
               </button>
               <button
                 type="button"
-                class="text-ink-3 hover:bg-surface-3 hover:text-ink-2 grid size-8 shrink-0 place-items-center rounded-lg transition-colors"
+                class="grid size-8 shrink-0 place-items-center rounded-lg text-ink-3 transition-colors hover:bg-surface-3 hover:text-ink-2"
                 title="清空"
                 @click="reset"
               >
@@ -376,9 +382,9 @@ onUnmounted(() => {
 
             <div
               v-if="state === 'working'"
-              class="border-line bg-surface-2 text-ink-2 rounded-xl border px-4 py-10 text-center text-[12.5px]"
+              class="rounded-xl border border-line bg-surface-2 px-4 py-10 text-center text-[12.5px] text-ink-2"
             >
-              <LoaderCircle :size="20" class="text-brand mx-auto mb-2 animate-spin" />
+              <LoaderCircle :size="20" class="mx-auto mb-2 animate-spin text-brand" />
               正在本地识别，请稍候…
             </div>
 
@@ -386,19 +392,19 @@ onUnmounted(() => {
               v-else-if="state === 'error'"
               class="rounded-xl border border-[#f5d7d7] bg-[#fdf2f2] px-4 py-4"
             >
-              <p class="text-danger flex items-center gap-2 text-[13px] font-semibold">
+              <p class="flex items-center gap-2 text-[13px] font-semibold text-danger">
                 <TriangleAlert :size="16" />
                 没有识别到内容
               </p>
-              <p class="text-ink-2 mt-1.5 text-[12px] leading-relaxed">{{ errorMessage }}</p>
-              <ul class="text-ink-3 mt-2.5 list-disc space-y-1 pl-4 text-[11.5px] leading-relaxed">
+              <p class="mt-1.5 text-[12px] leading-relaxed text-ink-2">{{ errorMessage }}</p>
+              <ul class="mt-2.5 list-disc space-y-1 pl-4 text-[11.5px] leading-relaxed text-ink-3">
                 <li>确保二维码完整，四周留白没有被裁掉</li>
                 <li>图片越清晰、对比度越高越容易识别</li>
                 <li>截图时避免缩放模糊、反光或严重遮挡</li>
               </ul>
               <button
                 type="button"
-                class="bg-brand-soft text-brand hover:bg-brand-soft-2 mt-3 inline-flex h-8 items-center gap-1.5 rounded-lg px-3 text-[12px] font-medium transition-colors"
+                class="mt-3 inline-flex h-8 items-center gap-1.5 rounded-lg bg-brand-soft px-3 text-[12px] font-medium text-brand transition-colors hover:bg-brand-soft-2"
                 @click="pick"
               >
                 <ImageUp :size="14" />
@@ -406,20 +412,20 @@ onUnmounted(() => {
               </button>
             </div>
 
-            <div v-else-if="result" class="border-line overflow-hidden rounded-xl border">
+            <div v-else-if="result" class="overflow-hidden rounded-xl border border-line">
               <div
-                class="border-line bg-success-soft/60 flex items-center gap-2 border-b px-4 py-2.5"
+                class="flex items-center gap-2 border-b border-line bg-success-soft/60 px-4 py-2.5"
               >
-                <CheckCircle2 :size="16" class="text-success shrink-0" />
-                <p class="text-success text-[12.5px] font-semibold">识别成功</p>
+                <CheckCircle2 :size="16" class="shrink-0 text-success" />
+                <p class="text-[12.5px] font-semibold text-success">识别成功</p>
                 <span
-                  class="bg-surface text-ink-2 rounded-full border border-line px-2 py-0.5 text-[11px] font-medium"
+                  class="rounded-full border border-line bg-surface px-2 py-0.5 text-[11px] font-medium text-ink-2"
                 >
                   {{ result.info.label }}
                 </span>
                 <button
                   type="button"
-                  class="border-line bg-surface text-ink-2 hover:border-line-strong hover:text-ink ml-auto inline-flex h-7 items-center gap-1 rounded-md border px-2 text-[11.5px] font-medium transition-colors"
+                  class="ml-auto inline-flex h-7 items-center gap-1 rounded-md border border-line bg-surface px-2 text-[11.5px] font-medium text-ink-2 transition-colors hover:border-line-strong hover:text-ink"
                   @click="copyResult"
                 >
                   <Copy :size="12" />
@@ -429,13 +435,13 @@ onUnmounted(() => {
 
               <div class="flex flex-col gap-3.5 px-4 py-4">
                 <div v-if="result.info.kind === 'url' && resultUrl">
-                  <p class="text-ink-3 text-[11px] font-semibold">链接</p>
-                  <p class="text-ink mt-1 text-[13px] leading-relaxed font-medium break-all">
+                  <p class="text-[11px] font-semibold text-ink-3">链接</p>
+                  <p class="mt-1 text-[13px] leading-relaxed font-medium break-all text-ink">
                     {{ resultUrl }}
                   </p>
                   <button
                     type="button"
-                    class="border-line bg-surface text-ink-2 hover:border-brand hover:text-brand mt-2 inline-flex h-8 items-center gap-1.5 rounded-lg border px-3 text-[12px] font-medium transition-colors"
+                    class="mt-2 inline-flex h-8 items-center gap-1.5 rounded-lg border border-line bg-surface px-3 text-[12px] font-medium text-ink-2 transition-colors hover:border-brand hover:text-brand"
                     @click="openExternal(resultUrl)"
                   >
                     <ExternalLink :size="14" />
@@ -443,23 +449,26 @@ onUnmounted(() => {
                   </button>
                 </div>
 
-                <div v-else-if="result.info.kind === 'wifi' && wifiInfo" class="flex flex-col gap-2">
+                <div
+                  v-else-if="result.info.kind === 'wifi' && wifiInfo"
+                  class="flex flex-col gap-2"
+                >
                   <div class="flex items-center justify-between gap-3">
-                    <span class="text-ink-3 text-[11.5px]">网络名称</span>
-                    <span class="text-ink text-[12.5px] font-medium break-all">
+                    <span class="text-[11.5px] text-ink-3">网络名称</span>
+                    <span class="text-[12.5px] font-medium break-all text-ink">
                       {{ wifiInfo.ssid }}
                     </span>
                   </div>
                   <div class="flex items-center justify-between gap-3">
-                    <span class="text-ink-3 text-[11.5px]">密码</span>
+                    <span class="text-[11.5px] text-ink-3">密码</span>
                     <span class="flex items-center gap-1.5">
-                      <span class="text-ink text-[12.5px] font-medium tabular-nums break-all">
+                      <span class="text-[12.5px] font-medium break-all text-ink tabular-nums">
                         {{ maskedPassword }}
                       </span>
                       <button
                         v-if="wifiInfo.password"
                         type="button"
-                        class="text-ink-3 hover:text-ink-2 grid size-6 place-items-center rounded-md transition-colors"
+                        class="grid size-6 place-items-center rounded-md text-ink-3 transition-colors hover:text-ink-2"
                         :title="showPassword ? '隐藏密码' : '显示密码'"
                         @click="showPassword = !showPassword"
                       >
@@ -469,7 +478,7 @@ onUnmounted(() => {
                       <button
                         v-if="wifiInfo.password"
                         type="button"
-                        class="text-ink-3 hover:text-brand grid size-6 place-items-center rounded-md transition-colors"
+                        class="grid size-6 place-items-center rounded-md text-ink-3 transition-colors hover:text-brand"
                         title="复制密码"
                         @click="copyPassword"
                       >
@@ -478,49 +487,52 @@ onUnmounted(() => {
                     </span>
                   </div>
                   <div class="flex items-center justify-between gap-3">
-                    <span class="text-ink-3 text-[11.5px]">加密方式</span>
-                    <span class="text-ink text-[12.5px] font-medium">
+                    <span class="text-[11.5px] text-ink-3">加密方式</span>
+                    <span class="text-[12.5px] font-medium text-ink">
                       {{ wifiInfo.encryption === "nopass" ? "无密码" : wifiInfo.encryption }}
                     </span>
                   </div>
                   <div v-if="wifiInfo.hidden" class="flex items-center justify-between gap-3">
-                    <span class="text-ink-3 text-[11.5px]">隐藏网络</span>
-                    <span class="text-ink text-[12.5px] font-medium">是</span>
+                    <span class="text-[11.5px] text-ink-3">隐藏网络</span>
+                    <span class="text-[12.5px] font-medium text-ink">是</span>
                   </div>
                 </div>
 
-                <div v-else-if="result.info.kind === 'vcard' && vcardRows.length" class="flex flex-col gap-2">
+                <div
+                  v-else-if="result.info.kind === 'vcard' && vcardRows.length"
+                  class="flex flex-col gap-2"
+                >
                   <div
                     v-for="row in vcardRows"
                     :key="row.label"
                     class="flex items-center justify-between gap-3"
                   >
-                    <span class="text-ink-3 shrink-0 text-[11.5px]">{{ row.label }}</span>
-                    <span class="text-ink min-w-0 text-right text-[12.5px] font-medium break-all">
+                    <span class="shrink-0 text-[11.5px] text-ink-3">{{ row.label }}</span>
+                    <span class="min-w-0 text-right text-[12.5px] font-medium break-all text-ink">
                       {{ row.value }}
                     </span>
                   </div>
                 </div>
 
                 <div v-else-if="result.info.kind === 'email' && result.info.email">
-                  <p class="text-ink-3 text-[11px] font-semibold">邮件地址</p>
-                  <p class="text-ink mt-1 text-[13px] font-medium break-all">
+                  <p class="text-[11px] font-semibold text-ink-3">邮件地址</p>
+                  <p class="mt-1 text-[13px] font-medium break-all text-ink">
                     {{ result.info.email }}
                   </p>
                 </div>
 
                 <div v-else-if="result.info.kind === 'tel' && result.info.phone">
-                  <p class="text-ink-3 text-[11px] font-semibold">电话号码</p>
-                  <p class="text-ink mt-1 text-[13px] font-medium break-all">
+                  <p class="text-[11px] font-semibold text-ink-3">电话号码</p>
+                  <p class="mt-1 text-[13px] font-medium break-all text-ink">
                     {{ result.info.phone }}
                   </p>
                 </div>
 
                 <div>
-                  <p class="text-ink-3 text-[11px] font-semibold">原始内容</p>
+                  <p class="text-[11px] font-semibold text-ink-3">原始内容</p>
                   <pre
-                    class="border-line bg-surface-2 text-ink-2 mt-1.5 max-h-44 overflow-auto rounded-lg border px-3 py-2 text-[12px] leading-relaxed break-all whitespace-pre-wrap"
-                  >{{ result.text }}</pre>
+                    class="mt-1.5 max-h-44 overflow-auto rounded-lg border border-line bg-surface-2 px-3 py-2 text-[12px] leading-relaxed break-all whitespace-pre-wrap text-ink-2"
+                    >{{ result.text }}</pre>
                 </div>
               </div>
             </div>
@@ -530,34 +542,40 @@ onUnmounted(() => {
     </div>
 
     <aside
-      class="border-line bg-surface shadow-card sticky top-5 overflow-hidden rounded-2xl border max-[980px]:static"
+      class="sticky top-5 overflow-hidden rounded-2xl border border-line bg-surface shadow-card max-[980px]:static"
     >
-      <header class="border-line flex items-center gap-2 border-b px-5 py-4">
+      <header class="flex items-center gap-2 border-b border-line px-5 py-4">
         <Info :size="17" class="text-brand" />
         <h2 class="text-sm font-semibold">使用提示</h2>
       </header>
 
-      <div class="text-ink-2 flex flex-col gap-3.5 px-5 pt-4 pb-5 text-[12px] leading-relaxed">
+      <div class="flex flex-col gap-3.5 px-5 pt-4 pb-5 text-[12px] leading-relaxed text-ink-2">
         <div class="flex gap-2.5">
-          <ClipboardPaste :size="15" class="text-brand mt-0.5 shrink-0" />
+          <ClipboardPaste :size="15" class="mt-0.5 shrink-0 text-brand" />
           <p>
             截图后直接按
-            <kbd class="border-line bg-surface-2 text-ink-2 rounded border px-1.5 py-0.5 text-[10.5px] font-semibold">Ctrl</kbd>
+            <kbd
+              class="rounded border border-line bg-surface-2 px-1.5 py-0.5 text-[10.5px] font-semibold text-ink-2"
+              >Ctrl</kbd
+            >
             +
-            <kbd class="border-line bg-surface-2 text-ink-2 rounded border px-1.5 py-0.5 text-[10.5px] font-semibold">V</kbd>
+            <kbd
+              class="rounded border border-line bg-surface-2 px-1.5 py-0.5 text-[10.5px] font-semibold text-ink-2"
+              >V</kbd
+            >
             即可识别，无需先保存文件
           </p>
         </div>
         <div class="flex gap-2.5">
-          <ScanLine :size="15" class="text-brand mt-0.5 shrink-0" />
+          <ScanLine :size="15" class="mt-0.5 shrink-0 text-brand" />
           <p>二维码尽量完整清晰，避免模糊、反光或大面积遮挡</p>
         </div>
         <div class="flex gap-2.5">
-          <ImageUp :size="15" class="text-brand mt-0.5 shrink-0" />
+          <ImageUp :size="15" class="mt-0.5 shrink-0 text-brand" />
           <p>支持 PNG、JPG、WebP、BMP、GIF、SVG，拖拽或点击都能添加</p>
         </div>
-        <div class="border-line mt-1 flex gap-2.5 border-t pt-3.5">
-          <ShieldCheck :size="15" class="text-success mt-0.5 shrink-0" />
+        <div class="mt-1 flex gap-2.5 border-t border-line pt-3.5">
+          <ShieldCheck :size="15" class="mt-0.5 shrink-0 text-success" />
           <p>图片只在你的电脑上解析，不会上传到任何服务器</p>
         </div>
       </div>
@@ -575,7 +593,7 @@ onUnmounted(() => {
     >
       <div
         v-if="notice"
-        class="bg-ink pointer-events-none fixed bottom-8 left-1/2 z-50 -translate-x-1/2 rounded-full px-4 py-2 text-[12.5px] font-medium text-white shadow-lg"
+        class="pointer-events-none fixed bottom-8 left-1/2 z-50 -translate-x-1/2 rounded-full bg-ink px-4 py-2 text-[12.5px] font-medium text-white shadow-lg"
       >
         {{ notice }}
       </div>

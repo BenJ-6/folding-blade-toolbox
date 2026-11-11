@@ -31,7 +31,12 @@ export interface ParsedColor {
 export type ColorFormat = "hex" | "rgb" | "hsl" | "hsv" | "cmyk";
 
 export type HarmonyMode =
-  "complementary" | "analogous" | "triadic" | "split" | "tetradic" | "monochrome";
+  | "complementary"
+  | "analogous"
+  | "triadic"
+  | "split"
+  | "tetradic"
+  | "monochrome";
 
 const HEX_PATTERN = /^#?([0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
 const RGBA_PATTERN = /^rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*(?:,\s*([\d.]+)\s*)?\)$/i;

@@ -244,19 +244,19 @@ async function copyValue(value: string, recordHex?: string): Promise<void> {
 <template>
   <div class="grid grid-cols-[minmax(0,1fr)_336px] items-start gap-5 max-[980px]:grid-cols-1">
     <div class="flex min-w-0 flex-col gap-4">
-      <section class="border-line bg-surface shadow-card overflow-hidden rounded-2xl border">
-        <header class="border-line flex items-center justify-between gap-3 border-b px-5 py-4">
+      <section class="overflow-hidden rounded-2xl border border-line bg-surface shadow-card">
+        <header class="flex items-center justify-between gap-3 border-b border-line px-5 py-4">
           <h2 class="flex items-center gap-2 text-sm font-semibold">
             <Palette :size="17" class="text-brand" />
             颜色
           </h2>
-          <span class="text-ink-3 text-[11.5px]">支持粘贴 HEX / RGB / HSL</span>
+          <span class="text-[11.5px] text-ink-3">支持粘贴 HEX / RGB / HSL</span>
         </header>
 
         <div class="flex flex-col gap-4 px-5 pt-4 pb-5">
           <div class="flex items-center gap-2">
             <label
-              class="bg-checkerboard border-line shadow-card relative size-11 shrink-0 cursor-pointer overflow-hidden rounded-xl border"
+              class="relative size-11 shrink-0 cursor-pointer overflow-hidden rounded-xl border border-line bg-checkerboard shadow-card"
               title="打开系统取色器"
             >
               <span class="absolute inset-0" :style="{ backgroundColor: previewBackground }" />
@@ -288,7 +288,7 @@ async function copyValue(value: string, recordHex?: string): Promise<void> {
               />
               <button
                 type="button"
-                class="text-ink-3 hover:text-brand absolute top-1/2 right-1.5 grid size-8 -translate-y-1/2 place-items-center rounded-lg transition-colors"
+                class="absolute top-1/2 right-1.5 grid size-8 -translate-y-1/2 place-items-center rounded-lg text-ink-3 transition-colors hover:text-brand"
                 title="复制当前 HEX"
                 @click="copyValue(formats[0].value, color)"
               >
@@ -298,7 +298,7 @@ async function copyValue(value: string, recordHex?: string): Promise<void> {
 
             <button
               type="button"
-              class="border-line bg-surface text-ink-2 hover:border-line-strong hover:text-brand grid size-11 shrink-0 place-items-center rounded-[10px] border transition-colors"
+              class="grid size-11 shrink-0 place-items-center rounded-[10px] border border-line bg-surface text-ink-2 transition-colors hover:border-line-strong hover:text-brand"
               title="从屏幕取色"
               aria-label="从屏幕取色"
               @click="pickFromScreen"
@@ -307,7 +307,7 @@ async function copyValue(value: string, recordHex?: string): Promise<void> {
             </button>
             <button
               type="button"
-              class="border-line bg-surface text-ink-2 hover:border-line-strong hover:text-brand grid size-11 shrink-0 place-items-center rounded-[10px] border transition-colors"
+              class="grid size-11 shrink-0 place-items-center rounded-[10px] border border-line bg-surface text-ink-2 transition-colors hover:border-line-strong hover:text-brand"
               title="随机颜色"
               aria-label="随机颜色"
               @click="pickRandom"
@@ -316,10 +316,10 @@ async function copyValue(value: string, recordHex?: string): Promise<void> {
             </button>
           </div>
 
-          <p v-if="inputError" class="text-danger -mt-1 text-[11.5px]">{{ inputError }}</p>
+          <p v-if="inputError" class="-mt-1 text-[11.5px] text-danger">{{ inputError }}</p>
 
           <div class="flex items-center gap-3">
-            <span class="text-ink-3 shrink-0 text-[11.5px]">不透明度</span>
+            <span class="shrink-0 text-[11.5px] text-ink-3">不透明度</span>
             <input
               v-model.number="alpha"
               type="range"
@@ -331,40 +331,40 @@ async function copyValue(value: string, recordHex?: string): Promise<void> {
               aria-label="不透明度"
             />
             <span
-              class="bg-brand-soft text-brand w-12 shrink-0 rounded-md py-1 text-center text-[11.5px] font-semibold tabular-nums"
+              class="w-12 shrink-0 rounded-md bg-brand-soft py-1 text-center text-[11.5px] font-semibold text-brand tabular-nums"
             >
               {{ alpha }}%
             </span>
           </div>
 
-          <div class="border-line divide-line divide-y overflow-hidden rounded-xl border">
+          <div class="divide-y divide-line overflow-hidden rounded-xl border border-line">
             <button
               v-for="item in formats"
               :key="item.label"
               type="button"
-              class="group hover:bg-surface-2 flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors"
+              class="group flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-surface-2"
               :title="`复制 ${item.value}`"
               @click="copyValue(item.value, color)"
             >
-              <span class="text-ink-3 w-12 shrink-0 text-[10.5px] font-semibold tracking-[0.06em]">
+              <span class="w-12 shrink-0 text-[10.5px] font-semibold tracking-[0.06em] text-ink-3">
                 {{ item.label }}
               </span>
-              <span class="text-ink min-w-0 flex-1 truncate font-mono text-[12px] font-medium">
+              <span class="min-w-0 flex-1 truncate font-mono text-[12px] font-medium text-ink">
                 {{ item.value }}
               </span>
               <Copy
                 :size="13"
-                class="text-ink-3 group-hover:text-brand shrink-0 opacity-0 transition-all group-hover:opacity-100"
+                class="shrink-0 text-ink-3 opacity-0 transition-all group-hover:text-brand group-hover:opacity-100"
               />
             </button>
           </div>
         </div>
       </section>
 
-      <section class="border-line bg-surface shadow-card overflow-hidden rounded-2xl border">
-        <header class="border-line flex items-center justify-between gap-3 border-b px-5 py-4">
+      <section class="overflow-hidden rounded-2xl border border-line bg-surface shadow-card">
+        <header class="flex items-center justify-between gap-3 border-b border-line px-5 py-4">
           <h2 class="text-sm font-semibold">色阶</h2>
-          <span class="text-ink-3 text-[11.5px]">点击色块复制</span>
+          <span class="text-[11.5px] text-ink-3">点击色块复制</span>
         </header>
         <div class="px-5 pt-4 pb-5">
           <div class="grid grid-cols-5 gap-1.5 min-[980px]:grid-cols-10">
@@ -388,10 +388,10 @@ async function copyValue(value: string, recordHex?: string): Promise<void> {
         </div>
       </section>
 
-      <section class="border-line bg-surface shadow-card overflow-hidden rounded-2xl border">
-        <header class="border-line flex items-center justify-between gap-3 border-b px-5 py-4">
+      <section class="overflow-hidden rounded-2xl border border-line bg-surface shadow-card">
+        <header class="flex items-center justify-between gap-3 border-b border-line px-5 py-4">
           <h2 class="text-sm font-semibold">配色方案</h2>
-          <span class="text-ink-3 text-[11.5px]">点击色块复制</span>
+          <span class="text-[11.5px] text-ink-3">点击色块复制</span>
         </header>
         <div class="flex flex-col gap-3 px-5 pt-4 pb-5">
           <div class="grid grid-cols-3 gap-1.5 min-[620px]:grid-cols-6">
@@ -402,7 +402,7 @@ async function copyValue(value: string, recordHex?: string): Promise<void> {
               class="h-8 rounded-lg border text-[11.5px] font-medium transition-colors"
               :class="
                 harmonyMode === mode.value
-                  ? 'border-brand bg-brand-soft text-brand font-semibold'
+                  ? 'border-brand bg-brand-soft font-semibold text-brand'
                   : 'border-line bg-surface text-ink-2 hover:border-line-strong'
               "
               @click="harmonyMode = mode.value"
@@ -443,21 +443,21 @@ async function copyValue(value: string, recordHex?: string): Promise<void> {
     </div>
 
     <aside
-      class="border-line bg-surface shadow-card sticky top-5 overflow-hidden rounded-2xl border max-[980px]:static max-[980px]:order-first"
+      class="sticky top-5 overflow-hidden rounded-2xl border border-line bg-surface shadow-card max-[980px]:static max-[980px]:order-first"
     >
-      <header class="border-line flex items-center justify-between border-b px-5 py-4">
+      <header class="flex items-center justify-between border-b border-line px-5 py-4">
         <h2 class="text-sm font-semibold">预览</h2>
-        <span class="text-ink-3 text-[11.5px]">点击色块复制</span>
+        <span class="text-[11.5px] text-ink-3">点击色块复制</span>
       </header>
 
       <div class="flex flex-col gap-4 px-5 pt-4 pb-5">
         <button
           type="button"
-          class="border-line block w-full overflow-hidden rounded-xl border p-2 text-left"
+          class="block w-full overflow-hidden rounded-xl border border-line p-2 text-left"
           title="复制当前 HEX"
           @click="copyValue(formats[0].value, color)"
         >
-          <div class="bg-checkerboard overflow-hidden rounded-lg">
+          <div class="overflow-hidden rounded-lg bg-checkerboard">
             <div class="h-[148px] w-full" :style="{ backgroundColor: previewBackground }" />
           </div>
         </button>
@@ -468,7 +468,7 @@ async function copyValue(value: string, recordHex?: string): Promise<void> {
           </p>
           <button
             type="button"
-            class="text-ink-3 hover:bg-surface-3 hover:text-brand grid size-8 place-items-center rounded-lg transition-colors"
+            class="grid size-8 place-items-center rounded-lg text-ink-3 transition-colors hover:bg-surface-3 hover:text-brand"
             title="复制 HEX"
             @click="copyValue(formats[0].value, color)"
           >
@@ -476,34 +476,34 @@ async function copyValue(value: string, recordHex?: string): Promise<void> {
           </button>
         </div>
 
-        <div class="text-ink-3 flex items-center justify-between text-[11.5px]">
+        <div class="flex items-center justify-between text-[11.5px] text-ink-3">
           <span>不透明度 {{ alpha }}%</span>
           <span class="tabular-nums">亮度 {{ luminance.toFixed(3) }}</span>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
-          <div class="border-line bg-surface-2 rounded-lg border px-2.5 py-2">
-            <p class="text-ink-3 text-[10.5px]">白底对比</p>
-            <p class="text-ink mt-0.5 text-[12px] font-semibold tabular-nums">
+          <div class="rounded-lg border border-line bg-surface-2 px-2.5 py-2">
+            <p class="text-[10.5px] text-ink-3">白底对比</p>
+            <p class="mt-0.5 text-[12px] font-semibold text-ink tabular-nums">
               {{ onWhite.toFixed(2) }}:1
             </p>
           </div>
-          <div class="border-line bg-surface-2 rounded-lg border px-2.5 py-2">
-            <p class="text-ink-3 text-[10.5px]">黑底对比</p>
-            <p class="text-ink mt-0.5 text-[12px] font-semibold tabular-nums">
+          <div class="rounded-lg border border-line bg-surface-2 px-2.5 py-2">
+            <p class="text-[10.5px] text-ink-3">黑底对比</p>
+            <p class="mt-0.5 text-[12px] font-semibold text-ink tabular-nums">
               {{ onBlack.toFixed(2) }}:1
             </p>
           </div>
         </div>
       </div>
 
-      <div class="border-line border-t px-5 pt-4 pb-5">
+      <div class="border-t border-line px-5 pt-4 pb-5">
         <div class="mb-2.5 flex items-center justify-between">
-          <p class="text-ink-2 text-[12.5px] font-semibold">最近使用</p>
+          <p class="text-[12.5px] font-semibold text-ink-2">最近使用</p>
           <button
             v-if="recent.length"
             type="button"
-            class="text-ink-3 hover:text-danger text-[11px] transition-colors"
+            class="text-[11px] text-ink-3 transition-colors hover:text-danger"
             @click="clear"
           >
             清空
@@ -515,13 +515,13 @@ async function copyValue(value: string, recordHex?: string): Promise<void> {
             v-for="item in recent"
             :key="item"
             type="button"
-            class="border-line aspect-square rounded-md border transition-transform hover:scale-110"
+            class="aspect-square rounded-md border border-line transition-transform hover:scale-110"
             :style="{ backgroundColor: item }"
             :title="`应用 ${item}`"
             @click="applyColor(item, { alphaPercent: 100, message: `已应用 ${item}` })"
           />
         </div>
-        <p v-else class="text-ink-3 text-[11.5px] leading-relaxed">
+        <p v-else class="text-[11.5px] leading-relaxed text-ink-3">
           复制或应用过的颜色会自动记录在这里
         </p>
       </div>

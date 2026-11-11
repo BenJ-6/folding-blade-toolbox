@@ -33,7 +33,7 @@ function handleUseColor(value: string): void {
     <PageHeader title="颜色工具" description="取色、格式转换、配色、渐变与对比度检查，一站完成" />
 
     <div
-      class="border-line bg-surface shadow-card mb-4 inline-flex items-center gap-1 rounded-xl border p-1"
+      class="mb-4 inline-flex items-center gap-1 rounded-xl border border-line bg-surface p-1 shadow-card"
     >
       <button
         v-for="item in tabs"
@@ -42,8 +42,8 @@ function handleUseColor(value: string): void {
         class="inline-flex h-9 items-center gap-2 rounded-lg px-4 text-[13px] transition-colors"
         :class="
           tab === item.value
-            ? 'bg-brand-soft text-brand font-semibold'
-            : 'text-ink-2 hover:bg-surface-2 font-medium'
+            ? 'bg-brand-soft font-semibold text-brand'
+            : 'font-medium text-ink-2 hover:bg-surface-2'
         "
         @click="tab = item.value"
       >
@@ -70,7 +70,7 @@ function handleUseColor(value: string): void {
       >
         <div
           v-if="message"
-          class="bg-ink pointer-events-none fixed bottom-8 left-1/2 z-50 -translate-x-1/2 rounded-full px-4 py-2 text-[12.5px] font-medium text-white shadow-lg"
+          class="pointer-events-none fixed bottom-8 left-1/2 z-50 -translate-x-1/2 rounded-full bg-ink px-4 py-2 text-[12.5px] font-medium text-white shadow-lg"
         >
           {{ message }}
         </div>
