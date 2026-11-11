@@ -1,7 +1,8 @@
 {
   "name": "folding-blade-toolbox",
   "version": "0.1.0",
-  "private": true,
+  "license": "MIT",
+  "author": "Ben J.",
   "type": "module",
   "scripts": {
     "dev": "vite",

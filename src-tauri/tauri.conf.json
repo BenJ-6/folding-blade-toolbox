@@ -27,6 +27,8 @@
   "bundle": {
     "active": true,
     "targets": "all",
+    "publisher": "Ben J.",
+    "licenseFile": "../LICENSE",
     "windows": {
       "wix": {
         "language": "zh-CN"
