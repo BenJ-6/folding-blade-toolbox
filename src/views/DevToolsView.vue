@@ -30,7 +30,7 @@ const tabs = [
   <section class="mx-auto w-full max-w-[1180px]">
     <PageHeader
       title="开发工具"
-      description="JWT 解析、JSON 格式化、Base64 / URL 编解码、时间戳与哈希，全部在本地完成"
+      description="JWT 解析、JSON 格式化、Base64 / URL 编解码、时间戳与哈希"
     />
 
     <div

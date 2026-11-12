@@ -97,7 +97,7 @@ async function copy(value: string, label: string): Promise<void> {
           <span class="text-[11.5px] text-ink-3 tabular-nums">
             {{ input ? `${inputBytes} 字节` : "—" }}
           </span>
-          <span class="text-[11px] text-ink-3">使用浏览器 Web Crypto 本地计算</span>
+          <span class="text-[11px] text-ink-3">使用 Web Crypto 计算</span>
         </div>
 
         <p v-if="error" class="rounded-lg bg-[#fdecec] px-3 py-2 text-[11.5px] text-danger">

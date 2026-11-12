@@ -113,9 +113,7 @@ const pngColorOptions = [256, 128, 64, 32];
             : `开始压缩${items.length ? `（${items.length} 张）` : ""}`
         }}
       </button>
-      <p class="text-center text-[11.5px] text-ink-3">
-        {{ processing ? "正在本地处理，请稍候" : "图片不会离开你的电脑" }}
-      </p>
+      <p v-if="processing" class="text-center text-[11.5px] text-ink-3">正在处理，请稍候</p>
     </div>
   </aside>
 </template>

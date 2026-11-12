@@ -177,7 +177,7 @@ async function copy(value: string, label: string): Promise<void> {
           </p>
           <p v-else class="text-[11.5px] leading-relaxed text-ink-3">
             支持带
-            <span class="font-mono">Bearer</span> 前缀的令牌，解析在本地完成，不会发送到任何服务器
+            <span class="font-mono">Bearer</span> 前缀的令牌
           </p>
         </div>
       </section>

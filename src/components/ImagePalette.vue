@@ -326,11 +326,6 @@ function clearPicked(): void {
             </div>
           </li>
         </ol>
-        <div
-          class="mt-4 rounded-lg bg-success-soft px-3 py-2 text-[11px] leading-relaxed text-success"
-        >
-          图片只在本地解析，不会上传到任何服务器
-        </div>
       </aside>
     </div>
 

@@ -230,14 +230,12 @@ function pickFormat(value: TargetFormat): void {
             : `${stale ? "重新转换" : "开始转换"}${items.length ? `（${items.length} 张）` : ""}`
         }}
       </button>
-      <div class="flex items-center justify-center gap-2 text-[11.5px] text-ink-3">
-        <span>{{ processing ? "正在本地处理，请稍候" : "图片不会离开你的电脑" }}</span>
-        <button
-          v-if="processing"
-          type="button"
-          class="text-danger hover:underline"
-          @click="cancelProcessing"
-        >
+      <div
+        v-if="processing"
+        class="flex items-center justify-center gap-2 text-[11.5px] text-ink-3"
+      >
+        <span>正在处理，请稍候</span>
+        <button type="button" class="text-danger hover:underline" @click="cancelProcessing">
           取消
         </button>
       </div>

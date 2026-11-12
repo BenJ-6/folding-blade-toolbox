@@ -8,6 +8,7 @@ import {
   Scaling,
   Terminal,
 } from "lucide-vue-next";
+import LocalBadge from "@/components/LocalBadge.vue";
 
 const tools = [
   {
@@ -61,21 +62,19 @@ const tools = [
         <div class="mb-4 flex items-center gap-3">
           <img src="/toolbox-logo.svg" alt="" width="40" height="40" class="rounded-[10px]" />
           <div>
-            <p class="text-[11px] font-semibold tracking-[0.1em] text-ink-3">本地工具集</p>
+            <p class="text-[11px] font-semibold tracking-[0.1em] text-ink-3">桌面工具集</p>
             <h1 class="text-[23px] font-bold tracking-[-0.02em]">折刀雀工具箱</h1>
           </div>
         </div>
         <p class="max-w-[560px] text-[13.5px] leading-[1.8] text-ink-2">
-          一个持续扩展的多功能工具箱。所有处理都在本机完成，文件不会上传到任何服务器。
+          一个持续扩展的多功能工具箱，图片、二维码、编码等常用处理都内置在应用里。
         </p>
-        <span
-          class="mt-5 inline-flex h-8 items-center gap-[7px] rounded-full border border-line bg-surface-2 px-3 text-xs text-ink-2"
-        >
-          <span
-            class="size-[7px] rounded-full bg-success shadow-[0_0_0_3px_var(--color-success-soft)]"
-          />
-          本地处理 · 不上传
-        </span>
+        <div class="mt-4 flex flex-wrap items-center gap-2.5">
+          <LocalBadge />
+          <span class="text-[12px] leading-relaxed text-ink-3">
+            带此标记的工具，所有处理都在你的电脑上完成。
+          </span>
+        </div>
       </div>
     </header>
 

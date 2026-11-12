@@ -479,7 +479,7 @@ async function copyContent(): Promise<void> {
             </div>
 
             <p class="text-[11.5px] leading-relaxed text-ink-3">
-              填入后，扫码会直接弹出加入网络提示；密码不会上传到任何服务器
+              填入后，扫码会直接弹出加入网络提示
             </p>
           </template>
 

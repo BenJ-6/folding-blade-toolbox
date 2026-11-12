@@ -12,7 +12,6 @@ import {
   Info,
   LoaderCircle,
   ScanLine,
-  ShieldCheck,
   TriangleAlert,
   X,
 } from "lucide-vue-next";
@@ -80,7 +79,7 @@ const vcardRows = computed(() => {
 
 const stateText = computed(() => {
   if (state.value === "working") {
-    return "正在本地识别…";
+    return "正在识别…";
   }
   if (state.value === "success") {
     return "识别完成";
@@ -385,7 +384,7 @@ onUnmounted(() => {
               class="rounded-xl border border-line bg-surface-2 px-4 py-10 text-center text-[12.5px] text-ink-2"
             >
               <LoaderCircle :size="20" class="mx-auto mb-2 animate-spin text-brand" />
-              正在本地识别，请稍候…
+              正在识别，请稍候…
             </div>
 
             <div
@@ -573,10 +572,6 @@ onUnmounted(() => {
         <div class="flex gap-2.5">
           <ImageUp :size="15" class="mt-0.5 shrink-0 text-brand" />
           <p>支持 PNG、JPG、WebP、BMP、GIF、SVG，拖拽或点击都能添加</p>
-        </div>
-        <div class="mt-1 flex gap-2.5 border-t border-line pt-3.5">
-          <ShieldCheck :size="15" class="mt-0.5 shrink-0 text-success" />
-          <p>图片只在你的电脑上解析，不会上传到任何服务器</p>
         </div>
       </div>
     </aside>
