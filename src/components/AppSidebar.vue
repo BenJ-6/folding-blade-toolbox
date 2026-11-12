@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FileDown, Home, Palette, QrCode, RefreshCw, Scaling } from "lucide-vue-next";
+import { FileDown, Home, Palette, QrCode, RefreshCw, Scaling, Terminal } from "lucide-vue-next";
 </script>
 
 <template>
@@ -93,6 +93,22 @@ import { FileDown, Home, Palette, QrCode, RefreshCw, Scaling } from "lucide-vue-
       >
         <Palette :size="17" />
         颜色工具
+      </button>
+    </RouterLink>
+
+    <p class="px-2.5 pt-3.5 pb-1.5 text-[11px] font-semibold tracking-[0.08em] text-ink-3">开发</p>
+
+    <RouterLink v-slot="{ isActive, navigate }" to="/devtools" custom>
+      <button
+        type="button"
+        class="flex h-[38px] w-full items-center gap-2.5 rounded-[10px] px-2.5 text-left text-[13.5px] font-medium transition-colors"
+        :class="
+          isActive ? 'bg-brand-soft font-semibold text-brand' : 'text-ink-2 hover:bg-surface-2'
+        "
+        @click="navigate"
+      >
+        <Terminal :size="17" />
+        开发工具
       </button>
     </RouterLink>
 

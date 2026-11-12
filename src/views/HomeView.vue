@@ -1,5 +1,13 @@
 <script setup lang="ts">
-import { ArrowUpRight, FileDown, Palette, QrCode, RefreshCw, Scaling } from "lucide-vue-next";
+import {
+  ArrowUpRight,
+  FileDown,
+  Palette,
+  QrCode,
+  RefreshCw,
+  Scaling,
+  Terminal,
+} from "lucide-vue-next";
 
 const tools = [
   {
@@ -31,6 +39,12 @@ const tools = [
     name: "颜色工具",
     description: "调色盘、渐变生成、对比度检查与图片取色。",
     icon: Palette,
+  },
+  {
+    to: "/devtools",
+    name: "开发工具",
+    description: "解析 JWT、格式化 JSON，Base64 / URL 编解码、时间戳与哈希。",
+    icon: Terminal,
   },
 ];
 </script>
