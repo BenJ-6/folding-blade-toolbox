@@ -75,17 +75,7 @@ pub(super) fn encode(
     match format {
         ImageFormat::Jpeg => {
             let rgb = flatten_on_background(&image, parse_hex_color(background));
-            let quality = quality.clamp(1, 100);
-            let mut encoder = jpeg_encoder::Encoder::new(&mut buffer, quality);
-            encoder.set_sampling_factor(jpeg_encoder::SamplingFactor::R_4_4_4);
-            encoder
-                .encode(
-                    rgb.as_raw(),
-                    rgb.width() as u16,
-                    rgb.height() as u16,
-                    jpeg_encoder::ColorType::Rgb,
-                )
-                .map_err(|error| format!("JPEG 编码失败：{error}"))?;
+            return encode_jpeg_rgb(&rgb, quality);
         }
         ImageFormat::Png => {
             image
@@ -98,8 +88,24 @@ pub(super) fn encode(
     Ok(buffer)
 }
 
+pub(super) fn encode_jpeg_rgb(rgb: &RgbImage, quality: u8) -> Result<Vec<u8>, String> {
+    let mut buffer = Vec::new();
+    let quality = quality.clamp(1, 100);
+    let mut encoder = jpeg_encoder::Encoder::new(&mut buffer, quality);
+    encoder.set_sampling_factor(jpeg_encoder::SamplingFactor::R_4_4_4);
+    encoder
+        .encode(
+            rgb.as_raw(),
+            rgb.width() as u16,
+            rgb.height() as u16,
+            jpeg_encoder::ColorType::Rgb,
+        )
+        .map_err(|error| format!("JPEG 编码失败：{error}"))?;
+    Ok(buffer)
+}
+
 /// 支持 `#rgb` / `#rrggbb`，解析失败时回退为白色
-fn parse_hex_color(value: &str) -> Rgb<u8> {
+pub(super) fn parse_hex_color(value: &str) -> Rgb<u8> {
     let hex = value.trim().trim_start_matches('#');
     let channel = |text: &str| u8::from_str_radix(text, 16);
 
@@ -124,7 +130,7 @@ fn parse_hex_color(value: &str) -> Rgb<u8> {
     }
 }
 
-fn flatten_on_background(image: &DynamicImage, background: Rgb<u8>) -> RgbImage {
+pub(super) fn flatten_on_background(image: &DynamicImage, background: Rgb<u8>) -> RgbImage {
     let rgba = image.to_rgba8();
     let mut rgb = RgbImage::new(rgba.width(), rgba.height());
 

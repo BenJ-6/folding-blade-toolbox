@@ -1,7 +1,9 @@
+mod metadata;
 mod processor;
 #[cfg(windows)]
 mod screen_hud;
 mod screen_picker;
+mod stitch;
 
 #[tauri::command]
 fn process_image(
@@ -28,6 +30,9 @@ pub fn run() {
         .plugin(tauri_plugin_fs::init())
         .invoke_handler(tauri::generate_handler![
             process_image,
+            metadata::inspect_image,
+            metadata::strip_metadata,
+            stitch::stitch_images,
             screen_picker::start_screen_pick
         ])
         .run(tauri::generate_context!())

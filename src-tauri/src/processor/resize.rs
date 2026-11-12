@@ -69,7 +69,7 @@ pub(super) fn resize_crop(image: DynamicImage, width: u32, height: u32) -> Dynam
     resized.crop_imm(x, y, width, height)
 }
 
-pub(super) fn resize_image(image: DynamicImage, width: u32, height: u32) -> DynamicImage {
+pub(crate) fn resize_image(image: DynamicImage, width: u32, height: u32) -> DynamicImage {
     if !image.color().has_alpha() {
         return image.resize_exact(width, height, FilterType::Triangle);
     }

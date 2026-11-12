@@ -31,6 +31,8 @@ export interface ImageItem {
 
 export type FixedSide = "width" | "height";
 
+export type CompressMode = "quality" | "target";
+
 export interface ProcessOptions {
   quality: number;
   resizeMode: ResizeMode;
@@ -46,6 +48,8 @@ export interface ProcessOptions {
   targetFormat: OutputFormat;
   background: string;
   rasterScale: number;
+  compressMode: CompressMode;
+  targetKb: number;
 }
 
 export const ACCEPTED_EXTENSIONS = ["jpg", "jpeg", "png", "svg", "gif"];
@@ -65,4 +69,6 @@ export const DEFAULT_OPTIONS: ProcessOptions = {
   targetFormat: "source",
   background: "#ffffff",
   rasterScale: 2,
+  compressMode: "quality",
+  targetKb: 200,
 };

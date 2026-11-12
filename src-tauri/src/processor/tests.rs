@@ -24,6 +24,8 @@ fn options(mode: &str) -> ProcessOptions {
         target_format: String::new(),
         background: "#ffffff".into(),
         raster_scale: 2.0,
+        compress_mode: String::new(),
+        target_kb: 0,
     }
 }
 
@@ -109,6 +111,51 @@ fn processes_png_file() {
 
     let _ = std::fs::remove_file(&input);
     let _ = std::fs::remove_file(&output);
+}
+
+#[test]
+fn target_size_jpeg_stays_under_limit() {
+    let mut rgba = RgbaImage::new(160, 160);
+    for (x, y, pixel) in rgba.enumerate_pixels_mut() {
+        *pixel = image::Rgba([
+            (x * 3 % 256) as u8,
+            (y * 5 % 256) as u8,
+            ((x + y) * 2 % 256) as u8,
+            255,
+        ]);
+    }
+
+    let image = DynamicImage::ImageRgba8(rgba);
+    let mut options = options("original");
+    options.quality = 95;
+    options.compress_mode = "target".into();
+    options.target_kb = 16;
+
+    let encoded = super::compress_to_target(image, ImageFormat::Jpeg, &options, None).unwrap();
+    assert!(
+        encoded.len() <= 16 * 1024,
+        "目标体积压缩未达标：{} 字节",
+        encoded.len()
+    );
+    assert!(image::load_from_memory(&encoded).is_ok());
+}
+
+#[test]
+fn target_size_keeps_small_original() {
+    let directory = std::env::temp_dir();
+    let input = directory.join("folding-blade-toolbox-target-original.png");
+
+    let rgba = RgbaImage::from_pixel(32, 32, image::Rgba([40, 80, 120, 255]));
+    DynamicImage::ImageRgba8(rgba).save(&input).unwrap();
+
+    let mut options = options("original");
+    options.compress_mode = "target".into();
+    options.target_kb = 1024;
+
+    let bytes = process(input.to_str().unwrap(), &options).unwrap();
+    assert_eq!(bytes, std::fs::read(&input).unwrap());
+
+    let _ = std::fs::remove_file(&input);
 }
 
 #[test]

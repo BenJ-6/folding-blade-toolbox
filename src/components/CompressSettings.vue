@@ -10,6 +10,7 @@ const qualityFill = computed<Record<string, string>>(() => ({
 }));
 
 const pngColorOptions = [256, 128, 64, 32];
+const targetOptions = [100, 200, 500, 1024];
 </script>
 
 <template>
@@ -52,7 +53,10 @@ const pngColorOptions = [256, 128, 64, 32];
           </button>
         </div>
 
-        <div v-if="options.pngLossy" class="grid grid-cols-4 gap-1.5">
+        <div
+          v-if="options.pngLossy && options.compressMode === 'quality'"
+          class="grid grid-cols-4 gap-1.5"
+        >
           <button
             v-for="count in pngColorOptions"
             :key="count"
@@ -69,10 +73,46 @@ const pngColorOptions = [256, 128, 64, 32];
           </button>
         </div>
 
-        <p class="text-[11.5px] leading-relaxed text-ink-3">仅对 PNG 生效；关闭时为无损压缩</p>
+        <p class="text-[11.5px] leading-relaxed text-ink-3">
+          {{
+            options.compressMode === "target"
+              ? "按目标体积压缩 PNG 时会自动启用量化"
+              : "仅对 PNG 生效；关闭时为无损压缩"
+          }}
+        </p>
       </div>
 
-      <div class="flex flex-col gap-2.5">
+      <div class="flex flex-col gap-2">
+        <p class="text-[12.5px] font-semibold text-ink-2">压缩方式</p>
+        <div class="flex items-center gap-1 rounded-lg bg-surface-2 p-1">
+          <button
+            type="button"
+            class="inline-flex h-7 flex-1 items-center justify-center rounded-md text-[11.5px] transition-colors"
+            :class="
+              options.compressMode === 'quality'
+                ? 'bg-surface font-semibold text-brand shadow-card'
+                : 'font-medium text-ink-2 hover:text-ink'
+            "
+            @click="options.compressMode = 'quality'"
+          >
+            按质量
+          </button>
+          <button
+            type="button"
+            class="inline-flex h-7 flex-1 items-center justify-center rounded-md text-[11.5px] transition-colors"
+            :class="
+              options.compressMode === 'target'
+                ? 'bg-surface font-semibold text-brand shadow-card'
+                : 'font-medium text-ink-2 hover:text-ink'
+            "
+            @click="options.compressMode = 'target'"
+          >
+            按目标体积
+          </button>
+        </div>
+      </div>
+
+      <div v-if="options.compressMode === 'quality'" class="flex flex-col gap-2.5">
         <div class="flex items-center justify-between">
           <p class="text-[12.5px] font-semibold text-ink-2">压缩质量</p>
           <span class="rounded-md bg-brand-soft px-2 py-0.5 text-[11.5px] font-semibold text-brand">
@@ -89,6 +129,44 @@ const pngColorOptions = [256, 128, 64, 32];
         />
         <p class="text-[11.5px] leading-relaxed text-ink-3">
           数值越低，体积越小，画质损失越明显；仅对 JPG 生效
+        </p>
+      </div>
+
+      <div v-else class="flex flex-col gap-2.5">
+        <p class="text-[12.5px] font-semibold text-ink-2">目标体积</p>
+        <div class="relative">
+          <input
+            v-model.number="options.targetKb"
+            type="number"
+            min="10"
+            max="20480"
+            step="10"
+            class="field pr-9 tabular-nums"
+          />
+          <span
+            class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-[11px] text-ink-3"
+          >
+            KB
+          </span>
+        </div>
+        <div class="grid grid-cols-4 gap-1.5">
+          <button
+            v-for="preset in targetOptions"
+            :key="preset"
+            type="button"
+            class="h-8 rounded-lg border text-[11px] font-medium transition-colors"
+            :class="
+              options.targetKb === preset
+                ? 'border-brand bg-brand-soft font-semibold text-brand'
+                : 'border-line bg-surface text-ink-2 hover:border-line-strong'
+            "
+            @click="options.targetKb = preset"
+          >
+            {{ preset >= 1024 ? `${preset / 1024}MB` : `${preset}KB` }}
+          </button>
+        </div>
+        <p class="text-[11.5px] leading-relaxed text-ink-3">
+          自动搜索能压到目标体积的最高画质；PNG 会启用有损量化，SVG / GIF 按原有方式处理
         </p>
       </div>
 

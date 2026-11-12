@@ -14,10 +14,13 @@ use std::io::Cursor;
 use image::{DynamicImage, ImageFormat, ImageReader};
 use serde::Deserialize;
 
-use self::encode::{encode, encode_png_lossy, optimize_png};
+use self::encode::{
+    encode, encode_jpeg_rgb, encode_png_lossy, flatten_on_background, optimize_png, parse_hex_color,
+};
 use self::exif::{apply_orientation, read_orientation};
 use self::gif::{first_frame, process_gif};
 use self::raster::rasterize_svg;
+pub(crate) use self::resize::resize_image as resize_for_output;
 use self::resize::{resize_crop, resize_image, target_size};
 use self::svg::{is_svg, process_svg};
 
@@ -44,6 +47,11 @@ pub struct ProcessOptions {
     pub background: String,
     #[serde(default = "default_raster_scale")]
     pub raster_scale: f32,
+    /// "quality"（默认）或 "target"（按目标体积搜索质量）
+    #[serde(default)]
+    pub compress_mode: String,
+    #[serde(default)]
+    pub target_kb: u32,
 }
 
 fn default_png_colors() -> u32 {
@@ -155,6 +163,10 @@ fn finish(
     options: &ProcessOptions,
     original: Option<&[u8]>,
 ) -> Result<Vec<u8>, String> {
+    if options.compress_mode == "target" && options.target_kb > 0 {
+        return compress_to_target(image, output_format, options, original);
+    }
+
     // PNG 有损量化：减少颜色数，显著压缩体积
     if output_format == ImageFormat::Png && options.png_lossy {
         let encoded = encode_png_lossy(&image, options.png_colors)?;
@@ -179,4 +191,96 @@ fn finish(
     }
 
     Ok(encoded)
+}
+
+/// 按目标体积二分搜索编码参数，尽量保留画质
+fn compress_to_target(
+    image: DynamicImage,
+    output_format: ImageFormat,
+    options: &ProcessOptions,
+    original: Option<&[u8]>,
+) -> Result<Vec<u8>, String> {
+    let target = (options.target_kb as usize).saturating_mul(1024);
+
+    if let Some(original) = original {
+        if original.len() <= target {
+            return Ok(original.to_vec());
+        }
+    }
+
+    match output_format {
+        ImageFormat::Jpeg => {
+            let rgb = flatten_on_background(&image, parse_hex_color(&options.background));
+            let mut best: Option<Vec<u8>> = None;
+            let mut low = 1u8;
+            let mut high = 95u8;
+
+            while low <= high {
+                let quality = low + (high - low) / 2;
+                let encoded = encode_jpeg_rgb(&rgb, quality)?;
+                if encoded.len() <= target {
+                    best = Some(encoded);
+                    if quality >= 95 {
+                        break;
+                    }
+                    low = quality + 1;
+                } else {
+                    if quality <= 1 {
+                        break;
+                    }
+                    high = quality - 1;
+                }
+            }
+
+            best.map_or_else(|| encode_jpeg_rgb(&rgb, 1), Ok)
+        }
+        ImageFormat::Png => {
+            let mut best: Option<Vec<u8>> = None;
+            let mut low = 2u32;
+            let mut high = 256u32;
+
+            while low <= high {
+                let colors = low + (high - low) / 2;
+                let encoded = optimize_png(encode_png_lossy(&image, colors)?);
+                if encoded.len() <= target {
+                    best = Some(encoded);
+                    low = colors + 1;
+                } else {
+                    if colors <= 2 {
+                        break;
+                    }
+                    high = colors - 1;
+                }
+            }
+
+            best.map_or_else(|| Ok(optimize_png(encode_png_lossy(&image, 2)?)), Ok)
+        }
+        _ => Err("按目标体积压缩仅支持 JPG / PNG".to_string()),
+    }
+}
+
+/// 供长图拼接使用：解码并应用 EXIF 方向
+pub(crate) fn load_for_output(path: &str) -> Result<DynamicImage, String> {
+    let data = fs::read(path).map_err(|error| format!("读取文件失败：{error}"))?;
+    let format = image::guess_format(&data).map_err(|_| "无法识别图片格式".to_string())?;
+
+    if is_svg(path, &data) {
+        return Err("长图拼接暂不支持 SVG".to_string());
+    }
+    if !matches!(
+        format,
+        ImageFormat::Jpeg | ImageFormat::Png | ImageFormat::Gif
+    ) {
+        return Err("长图拼接目前支持 JPG / PNG / GIF".to_string());
+    }
+
+    let mut image = ImageReader::with_format(Cursor::new(&data), format)
+        .decode()
+        .map_err(|error| format!("解码失败：{error}"))?;
+
+    if format == ImageFormat::Jpeg {
+        image = apply_orientation(image, read_orientation(path));
+    }
+
+    Ok(image)
 }

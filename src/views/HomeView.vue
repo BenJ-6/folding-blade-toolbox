@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import {
   ArrowUpRight,
+  Droplets,
   FileDown,
+  FileText,
+  Images,
   Palette,
   QrCode,
   RefreshCw,
   Scaling,
+  ScanSearch,
   Terminal,
 } from "lucide-vue-next";
 import LocalBadge from "@/components/LocalBadge.vue";
@@ -28,6 +32,30 @@ const tools = [
     name: "格式转换",
     description: "JPG、PNG、GIF、SVG 互转，支持透明背景与矢量化。",
     icon: RefreshCw,
+  },
+  {
+    to: "/watermark",
+    name: "批量加水印",
+    description: "文字或 Logo 水印，支持九宫格定位、平铺、旋转与透明度。",
+    icon: Droplets,
+  },
+  {
+    to: "/pdf",
+    name: "图片转 PDF",
+    description: "多张图片按顺序合并成 PDF，支持 A4 页面、页边距与质量调节。",
+    icon: FileText,
+  },
+  {
+    to: "/stitch",
+    name: "长图拼接",
+    description: "按顺序拼成纵向长图、横向长图或网格拼图，输出 PNG。",
+    icon: Images,
+  },
+  {
+    to: "/metadata",
+    name: "图片信息",
+    description: "查看尺寸与 EXIF 信息，一键清除拍摄设备、GPS 等元数据。",
+    icon: ScanSearch,
   },
   {
     to: "/qrcode",

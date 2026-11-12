@@ -98,13 +98,15 @@ export async function processWithCanvas(
       );
     }
 
-    const output = await new Promise<Blob>((resolve, reject) => {
-      canvas.toBlob(
-        (result) => (result ? resolve(result) : reject(new Error("编码失败"))),
-        mime,
-        options.quality / 100,
-      );
-    });
+    const targetBytes =
+      options.compressMode === "target" ? Math.max(1, options.targetKb) * 1024 : 0;
+
+    let output: Blob;
+    if (targetBytes > 0 && mime === "image/jpeg") {
+      output = await encodeJpegWithinTarget(canvas, targetBytes);
+    } else {
+      output = await toBlob(canvas, mime, options.quality / 100);
+    }
 
     const resized = target.width !== decoded.width || target.height !== decoded.height;
     if (!resized && mime === sourceMime && output.size > blob.size) {
@@ -114,6 +116,39 @@ export async function processWithCanvas(
   } finally {
     decoded.dispose();
   }
+}
+
+function toBlob(canvas: HTMLCanvasElement, mime: string, quality: number): Promise<Blob> {
+  return new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob(
+      (result) => (result ? resolve(result) : reject(new Error("编码失败"))),
+      mime,
+      quality,
+    );
+  });
+}
+
+/** 二分搜索质量，取体积不超过目标值的最高画质 */
+async function encodeJpegWithinTarget(
+  canvas: HTMLCanvasElement,
+  targetBytes: number,
+): Promise<Blob> {
+  let best: Blob | null = null;
+  let low = 1;
+  let high = 95;
+
+  while (low <= high) {
+    const quality = Math.round((low + high) / 2);
+    const blob = await toBlob(canvas, "image/jpeg", quality / 100);
+    if (blob.size <= targetBytes) {
+      best = blob;
+      low = quality + 1;
+    } else {
+      high = quality - 1;
+    }
+  }
+
+  return best ?? toBlob(canvas, "image/jpeg", 0.01);
 }
 
 function drawCover(

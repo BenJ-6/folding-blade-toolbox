@@ -53,6 +53,8 @@ export async function processWithRust(
     targetFormat: options.targetFormat,
     background: options.background,
     rasterScale: options.rasterScale,
+    compressMode: options.compressMode,
+    targetKb: Number.isFinite(options.targetKb) ? Math.max(0, Math.round(options.targetKb)) : 0,
   };
 
   const result = await invoke<ArrayBuffer | Uint8Array>("process_image", {
@@ -60,8 +62,46 @@ export async function processWithRust(
     options: payload,
   });
 
+  return responseToBlob(result, resolveOutputMime(sourceMime, options.targetFormat));
+}
+
+function responseToBlob(result: ArrayBuffer | Uint8Array, mime: string): Blob {
   const source = result instanceof Uint8Array ? result : new Uint8Array(result);
   const buffer = new ArrayBuffer(source.byteLength);
   new Uint8Array(buffer).set(source);
-  return new Blob([buffer], { type: resolveOutputMime(sourceMime, options.targetFormat) });
+  return new Blob([buffer], { type: mime });
+}
+
+export interface ImageMetaField {
+  tag: string;
+  value: string;
+}
+
+export interface ImageMeta {
+  format: string;
+  width: number;
+  height: number;
+  bytes: number;
+  exif: ImageMetaField[];
+}
+
+export async function inspectImage(path: string): Promise<ImageMeta> {
+  return invoke<ImageMeta>("inspect_image", { path });
+}
+
+export async function stripMetadata(path: string, mime: string): Promise<Blob> {
+  const result = await invoke<ArrayBuffer | Uint8Array>("strip_metadata", { path });
+  return responseToBlob(result, mime);
+}
+
+export interface StitchOptions {
+  direction: "vertical" | "horizontal" | "grid";
+  gap: number;
+  columns: number;
+  background: string;
+}
+
+export async function stitchImages(paths: string[], options: StitchOptions): Promise<Blob> {
+  const result = await invoke<ArrayBuffer | Uint8Array>("stitch_images", { paths, options });
+  return responseToBlob(result, "image/png");
 }
