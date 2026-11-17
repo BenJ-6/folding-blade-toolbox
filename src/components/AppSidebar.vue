@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {
+  AppWindow,
   Droplets,
   FileDown,
   FileText,
@@ -31,6 +32,7 @@ const groups = [
     items: [
       { to: "/qrcode", label: "二维码", icon: QrCode },
       { to: "/color", label: "颜色工具", icon: Palette },
+      { to: "/icon", label: "图标提取", icon: AppWindow },
     ],
   },
   {

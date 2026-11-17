@@ -55,12 +55,30 @@ export async function pickImages(
   return files.map((file) => ({ file, name: file.name }));
 }
 
-function pickWithInput(extensions: string[]): Promise<File[]> {
+export async function pickFile(extensions: string[], label = "文件"): Promise<PickedFile | null> {
+  if (inTauri()) {
+    const selection = await open({
+      multiple: false,
+      directory: false,
+      filters: [{ name: label, extensions: [...extensions] }],
+    });
+    if (typeof selection !== "string") {
+      return null;
+    }
+    return { path: selection, name: selection.split(/[\\/]/).pop() ?? selection };
+  }
+
+  const files = await pickWithInput(extensions, false);
+  const file = files[0];
+  return file ? { file, name: file.name } : null;
+}
+
+function pickWithInput(extensions: string[], multiple = true): Promise<File[]> {
   return new Promise((resolve) => {
     const input = document.createElement("input");
     input.type = "file";
     input.accept = extensions.map((ext) => `.${ext}`).join(",");
-    input.multiple = true;
+    input.multiple = multiple;
     input.style.display = "none";
 
     const finish = (files: File[]) => {
@@ -85,6 +103,16 @@ export async function readImageFile(picked: PickedFile): Promise<Blob> {
   }
   const bytes = await readFile(picked.path);
   return new Blob([toArrayBuffer(bytes)], { type: guessMime(picked.name) });
+}
+
+export async function readFileBytes(picked: PickedFile): Promise<Uint8Array> {
+  if (picked.file) {
+    return new Uint8Array(await picked.file.arrayBuffer());
+  }
+  if (!picked.path) {
+    throw new Error("缺少文件路径");
+  }
+  return readFile(picked.path);
 }
 
 function toArrayBuffer(bytes: Uint8Array): ArrayBuffer {

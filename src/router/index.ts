@@ -4,6 +4,7 @@ import CompressView from "@/views/CompressView.vue";
 import ConvertView from "@/views/ConvertView.vue";
 import DevToolsView from "@/views/DevToolsView.vue";
 import HomeView from "@/views/HomeView.vue";
+import IconExtractView from "@/views/IconExtractView.vue";
 import MetadataView from "@/views/MetadataView.vue";
 import PdfView from "@/views/PdfView.vue";
 import QrCodeView from "@/views/QrCodeView.vue";
@@ -23,6 +24,7 @@ export const router = createRouter({
     { path: "/stitch", name: "stitch", component: StitchView },
     { path: "/metadata", name: "metadata", component: MetadataView },
     { path: "/qrcode", name: "qrcode", component: QrCodeView },
+    { path: "/icon", name: "icon", component: IconExtractView },
     { path: "/color", name: "color", component: ColorView },
     { path: "/devtools", name: "devtools", component: DevToolsView },
   ],

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {
+  AppWindow,
   ArrowUpRight,
   Droplets,
   FileDown,
@@ -68,6 +69,12 @@ const tools = [
     name: "颜色工具",
     description: "调色盘、渐变生成、对比度检查与图片取色。",
     icon: Palette,
+  },
+  {
+    to: "/icon",
+    name: "图标提取",
+    description: "从 EXE、DLL、ICO 文件中提取内嵌图标，导出 PNG 或 ICO。",
+    icon: AppWindow,
   },
   {
     to: "/devtools",
