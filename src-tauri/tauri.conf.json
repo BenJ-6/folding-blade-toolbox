@@ -26,7 +26,8 @@
   },
   "bundle": {
     "active": true,
-    "targets": "all",
+    "targets": ["nsis"],
+    "createUpdaterArtifacts": true,
     "publisher": "Ben J.",
     "licenseFile": "../LICENSE",
     "windows": {
@@ -45,5 +46,16 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEVDMTRDRjg1NTNBRjhERkUKUldUK2phOVRoYzhVN0g2R1hLOG8yTGZZRkRyVHhvZUxuY2UrdXlwYTl0WEJyN2tVaU9PdFFCaVUK",
+      "endpoints": [
+        "https://github.com/BenJ-6/my-toolbox/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
+    }
   }
 }

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import {
   AppWindow,
   Droplets,
@@ -6,6 +7,7 @@ import {
   FileText,
   Home,
   Images,
+  Info,
   Palette,
   QrCode,
   RefreshCw,
@@ -13,6 +15,12 @@ import {
   ScanSearch,
   Terminal,
 } from "lucide-vue-next";
+import AboutDialog from "@/components/AboutDialog.vue";
+import { APP_VERSION } from "@/lib/appInfo";
+import { useUpdate } from "@/lib/update";
+
+const { hasUpdate } = useUpdate();
+const aboutOpen = ref(false);
 
 const groups = [
   {
@@ -86,6 +94,22 @@ const groups = [
       </RouterLink>
     </template>
 
-    <div class="mt-auto border-t border-line px-2.5 pt-3.5 text-[11.5px] text-ink-3">v0.1.0</div>
+    <div class="mt-auto flex items-center justify-between gap-1 border-t border-line px-1 pt-2.5">
+      <span class="px-1.5 text-[11.5px] text-ink-3">v{{ APP_VERSION }}</span>
+      <button
+        type="button"
+        class="relative flex items-center gap-1.5 rounded-lg px-2 py-1 text-[11.5px] font-medium text-ink-2 transition-colors hover:bg-surface-2 hover:text-ink"
+        @click="aboutOpen = true"
+      >
+        <Info :size="13" />
+        关于
+        <span
+          v-if="hasUpdate"
+          class="absolute top-0.5 right-0.5 size-1.5 rounded-full bg-brand ring-2 ring-surface"
+        />
+      </button>
+    </div>
+
+    <AboutDialog :open="aboutOpen" @close="aboutOpen = false" />
   </aside>
 </template>

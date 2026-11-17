@@ -71,6 +71,7 @@ bun run dev
 | `bun tauri build`   | 构建各平台安装包                 |
 | `bun run preview`   | 预览前端构建产物                 |
 | `bun run typecheck` | 运行 `vue-tsc` 类型检查          |
+| `bun run version:check` | 校验三处版本号保持一致       |
 | `bun run lint`      | 运行 oxlint 检查并自动修复       |
 | `bun run format`    | 使用 oxfmt 格式化代码            |
 
@@ -81,6 +82,48 @@ bun tauri build
 ```
 
 产物位于 `src-tauri/target/release/bundle/`，安装包名称与应用标识来自 [tauri.conf.json](src-tauri/tauri.conf.json)。
+
+安装包只产出 NSIS（`bundle.targets` 为 `["nsis"]`），因为应用内更新以 NSIS 安装器为更新载体。
+
+由于开启了 `bundle.createUpdaterArtifacts`，构建时会同时生成 `.exe.sig` 签名文件；**未提供签名私钥时构建会直接失败**：
+
+```powershell
+$env:TAURI_SIGNING_PRIVATE_KEY="私钥内容或私钥文件路径"
+$env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD="私钥密码"
+bun tauri build
+```
+
+## 应用内更新
+
+入口在侧边栏底部的「关于」面板里：显示当前版本，并提供「检查更新 → 下载更新 → 立即重启安装」的完整流程。应用启动 4 秒后会静默检查一次，有新版本时「关于」按钮右上角出现一个小圆点。
+
+### 首次配置
+
+1. 生成密钥对（只需一次）：
+
+   ```powershell
+   bun tauri signer generate -w $HOME/.tauri/folding-blade-toolbox.key
+   ```
+
+2. 把生成的**公钥内容**整段填入 [tauri.conf.json](src-tauri/tauri.conf.json) 的 `plugins.updater.pubkey`（不能填文件路径）。
+3. 在仓库 Settings → Environments 新建环境 `release`：
+   - Required reviewers 勾选自己，Deployment branches and tags 选 “Selected branches and tags” 并添加 **Tag** 规则 `v*`（下拉框注意切到 Tag，不要选 Branch）。
+   - 在该环境下添加 Secrets：`TAURI_SIGNING_PRIVATE_KEY`、`TAURI_SIGNING_PRIVATE_KEY_PASSWORD`（不设密码可省略后者）。
+
+> 签名密钥存放在 Environment secrets 而不是 Repository secrets，是为了让发布必须经过审批，其他 workflow 也读不到私钥。私钥丢失后，已安装的用户将无法再收到更新；请离线备份，不要提交到仓库。
+
+### 发布新版本
+
+1. 同步修改三处版本号：`package.json`、`src-tauri/Cargo.toml`、`src-tauri/tauri.conf.json`（应用内更新以 `tauri.conf.json` 为准）。
+2. 运行 `bun run version:check` 确认一致。
+3. 提交并打标签：`git tag v0.1.1 && git push origin v0.1.1`。
+4. [release.yml](.github/workflows/release.yml) 会构建 NSIS 安装包、签名并创建草稿 Release；在 GitHub 上发布该 Release 后，`latest.json` 才会对已安装用户生效。
+
+### 注意事项
+
+- Windows 上执行安装时应用会被强制退出，因此有批量图片任务正在运行时「立即重启安装」会被禁用。
+- 仅支持由 NSIS 安装的实例；用 MSI 或便携版运行的用户需要手动下载安装包。
+- 更新端点默认为 GitHub Releases，如需国内加速可在 `plugins.updater.endpoints` 中追加镜像地址（按顺序回退）。
 
 ## 测试
 
@@ -109,12 +152,15 @@ cargo test
 │   ├── src/screen_picker.rs# 屏幕取色
 │   ├── capabilities/       # Tauri 权限配置
 │   └── tauri.conf.json     # 应用配置
+├── scripts/                # 构建期脚本（版本号校验）
+├── .github/workflows/      # 发布流水线
 └── public/                 # 静态资源与图标
 ```
 
 ## 隐私说明
 
 - 图片压缩、缩放、转换均在本地完成，必要时通过 Tauri IPC 交给 Rust 处理。
+- 唯一的对外请求来自应用内更新：访问 GitHub Releases 获取版本清单与安装包，不携带任何本地文件或个人信息。
 - 不包含任何统计、遥测或远程上传逻辑。
 
 ## 推荐 IDE

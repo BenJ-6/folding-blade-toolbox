@@ -1,0 +1,60 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    permissions:
+      contents: write
+    runs-on: windows-latest
+    # 签名密钥存放在该环境的 Environment secrets 中，并受审批与 v* 标签规则保护
+    environment:
+      name: release
+      url: https://github.com/BenJ-6/folding-blade-toolbox/releases
+    steps:
+      - uses: actions/checkout@v4
+
+      # 应用内更新以 tauri.conf.json 的 version 为准，三处版本号必须一致
+      - name: 校验版本号
+        run: node scripts/check-versions.mjs ${{ github.ref_name }}
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+
+      - name: 安装依赖
+        run: bun install --frozen-lockfile
+
+      # 需要在 Environment `release` 下配置 Secrets（Settings → Environments）：
+      #   TAURI_SIGNING_PRIVATE_KEY           tauri signer generate 生成的私钥内容
+      #   TAURI_SIGNING_PRIVATE_KEY_PASSWORD  私钥密码（无密码时可不配置）
+      # tauri-action 会构建 NSIS 安装包与其 .sig，并生成 updater 使用的 latest.json
+      - name: 构建并发布
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: "折刀雀工具箱 v__VERSION__"
+          releaseBody: |
+            Windows 用户可在应用「关于」面板中直接更新；若自动更新失败，可下载下方安装包手动安装。
+          releaseDraft: true
+          prerelease: false
+          args: --target x86_64-pc-windows-msvc
