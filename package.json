@@ -10,6 +10,8 @@
     "preview": "vite preview",
     "typecheck": "vue-tsc --noEmit",
     "version:check": "node scripts/check-versions.mjs",
+    "release:bump": "node scripts/release.mjs bump",
+    "release:tag": "node scripts/release.mjs tag",
     "lint": "bun run lint:oxlint && bun run lint:oxfmt",
     "lint:oxlint": "oxlint --fix",
     "lint:oxfmt": "oxfmt",

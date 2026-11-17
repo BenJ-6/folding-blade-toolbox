@@ -72,6 +72,8 @@ bun run dev
 | `bun run preview`   | 预览前端构建产物                 |
 | `bun run typecheck` | 运行 `vue-tsc` 类型检查          |
 | `bun run version:check` | 校验三处版本号保持一致       |
+| `bun run release:bump` | 同步版本号、跑测试并本地提交          |
+| `bun run release:tag` | 校验版本号、打标签并推送            |
 | `bun run lint`      | 运行 oxlint 检查并自动修复       |
 | `bun run format`    | 使用 oxfmt 格式化代码            |
 
@@ -112,7 +114,27 @@ bun tauri build
 
 > 签名密钥存放在 Environment secrets 而不是 Repository secrets，是为了让发布必须经过审批，其他 workflow 也读不到私钥。私钥丢失后，已安装的用户将无法再收到更新；请离线备份，不要提交到仓库。
 
-### 发布新版本
+### 发布新版本（推荐）
+
+发版拆成两步：先在本地把版本号改对并提交，确认无误后再打标签推送。第一步可以反复重来，不会污染远端。
+
+```powershell
+# 1. 同步版本号 → 校验 → 类型检查 + cargo test → 本地提交
+bun run release:bump          # 默认 patch：0.1.0 → 0.1.1
+bun run release:bump minor    # 0.1.1 → 0.2.0
+bun run release:bump 0.2.3    # 指定版本
+
+# 2. 校验版本号与标签一致 → 打标签 → 推送，触发流水线
+bun run release:tag
+```
+
+- `release:bump` 要求工作区干净，并会同步五处版本号（`package.json`、`Cargo.toml`、`Cargo.lock`、`tauri.conf.json`、README），提交信息为 `chore: release vX.Y.Z`。
+- `release:tag` 会重新读取 `package.json` 推导标签，校验三处版本号一致且标签未被占用，然后推送分支与标签。
+- 常用选项：`--dry-run` 预览、`-y` 跳过确认；`release:bump` 还支持 `--no-test`，`release:tag` 支持 `--no-push`（只建本地标签）。
+
+推送后到 Actions 页面审批环境部署，等构建完成，再到 Releases 页面把草稿 Release **手动发布**（不发布的话客户端拿不到更新）。
+
+### 手动发布
 
 1. 同步修改三处版本号：`package.json`、`src-tauri/Cargo.toml`、`src-tauri/tauri.conf.json`（应用内更新以 `tauri.conf.json` 为准）。
 2. 运行 `bun run version:check` 确认一致。
