@@ -146,6 +146,8 @@ bun run release:tag
 - Windows 上执行安装时应用会被强制退出，因此有批量图片任务正在运行时「立即重启安装」会被禁用。
 - 仅支持由 NSIS 安装的实例；用 MSI 或便携版运行的用户需要手动下载安装包。
 - 更新端点默认为 GitHub Releases，如需国内加速可在 `plugins.updater.endpoints` 中追加镜像地址（按顺序回退）。
+- GitHub 不接受非 ASCII 资产名（中文会被删成 `_0.1.2_x64-setup.exe`），因此 [release.yml](.github/workflows/release.yml) 用 `releaseAssetNamePattern: "[mainBinaryName]_[version]_[arch][setup][ext]"` 生成 `folding-blade-toolbox_0.1.2_x64-setup.exe`。
+- 流水线必须使用 `tauri-action@v1`：v0 会用 ASCII 化后的资产名反查下载地址，遇到中文产物名匹配失败，只打印 `Signature not found for the updater JSON` 就跳过，`latest.json` 不会生成。
 
 ## 测试
 

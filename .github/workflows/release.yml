@@ -61,4 +61,7 @@ jobs:
           prerelease: false
           # 只产出 NSIS，明确优先使用 .exe.sig 作为更新签名
           updaterJsonPreferNsis: true
+          # GitHub 会把非 ASCII 文件名改名（中文被删成 `_0.1.2_x64-setup.exe`），
+          # 这里用 Cargo 包名生成 ASCII 资产名：folding-blade-toolbox_0.1.2_x64-setup.exe
+          releaseAssetNamePattern: "[mainBinaryName]_[version]_[arch][setup][ext]"
           args: --target x86_64-pc-windows-msvc
