@@ -3,4 +3,4 @@
 export const APP_NAME = "折刀雀工具箱";
 export const APP_VERSION = __APP_VERSION__;
 export const APP_LICENSE = "MIT License";
-export const REPO_URL = "https://github.com/BenJ-6/my-toolbox";
+export const REPO_URL = "https://github.com/BenJ-6/folding-blade-toolbox";

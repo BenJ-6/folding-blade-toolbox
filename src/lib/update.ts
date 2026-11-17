@@ -52,6 +52,9 @@ function describeError(error: unknown): string {
   if (/public ?key|pubkey|invalid key/i.test(raw)) {
     return "更新通道尚未配置签名公钥，暂时无法检查更新。";
   }
+  if (/valid release json|release data/i.test(raw)) {
+    return "更新服务暂时没有可用的版本信息（Release 可能还是草稿），请稍后再试。";
+  }
   if (/\b404\b|not found|no such/i.test(raw)) {
     return "更新服务尚未发布版本信息，请稍后再试。";
   }
