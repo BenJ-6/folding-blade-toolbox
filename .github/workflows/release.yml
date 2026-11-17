@@ -44,8 +44,10 @@ jobs:
       #   TAURI_SIGNING_PRIVATE_KEY           tauri signer generate 生成的私钥内容
       #   TAURI_SIGNING_PRIVATE_KEY_PASSWORD  私钥密码（无密码时可不配置）
       # tauri-action 会构建 NSIS 安装包与其 .sig，并生成 updater 使用的 latest.json
+      # 必须使用 v1：v0 用 ASCII 化后的资产名反查下载地址，遇到中文产物名会匹配失败，
+      # 导致 "Signature not found for the updater JSON. Skipping upload..." 而不生成 latest.json
       - name: 构建并发布
-        uses: tauri-apps/tauri-action@v0
+        uses: tauri-apps/tauri-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
@@ -57,4 +59,6 @@ jobs:
             Windows 用户可在应用「关于」面板中直接更新；若自动更新失败，可下载下方安装包手动安装。
           releaseDraft: true
           prerelease: false
+          # 只产出 NSIS，明确优先使用 .exe.sig 作为更新签名
+          updaterJsonPreferNsis: true
           args: --target x86_64-pc-windows-msvc
