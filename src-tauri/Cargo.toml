@@ -1,6 +1,6 @@
 [package]
 name = "folding-blade-toolbox"
-version = "0.1.2"
+version = "0.1.3"
 description = "A Tauri App"
 authors = ["Ben J."]
 license = "MIT"
